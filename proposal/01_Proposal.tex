@@ -5,6 +5,7 @@
 \renewcommand\footnotetextcopyrightpermission[1]{}
 \pagestyle{plain}
 \setlength{\bibsep}{1pt}
+\setlength{\emergencystretch}{1em}
 
 \title{Domain-Generalizable Phishing URL Detection under Realistic Evaluation Splits}
 
@@ -31,7 +32,7 @@
 \begin{document}
 
 \begin{abstract}
-Phishing websites copy real websites to steal passwords and money. Most machine-learning tools that catch phishing links are tested the easy way: the data is shuffled first, so the same website family can end up in both training and testing. This makes the tool look better than it really is. We test detectors the honest way, using test websites from domains the model has never seen, and measure how much performance drops once these shortcuts are removed.
+Phishing websites copy real websites to steal passwords and money. Most machine-learning tools that catch phishing links are tested the easy way: the data is shuffled first, so the same website family can end up in both training and testing. This makes the tool look better than it really is. We test detectors the honest way, using test websites from domains the model has never seen, and measure how much accuracy drops once the shortcuts are removed.
 \end{abstract}
 
 \keywords{phishing detection, domain generalization, evaluation methodology, machine learning}
@@ -39,34 +40,34 @@ Phishing websites copy real websites to steal passwords and money. Most machine-
 \maketitle
 
 \section{Introduction and Motivation}
-Phishing is when a fake link pretends to be a trusted website to steal someone's login or payment details. In 2025 alone, security groups tracked over 3.8 million phishing attacks~\cite{apwg2026}. A good detector could catch these links before anyone clicks them. Past work already reports very accurate results~\cite{prasad2024}, but that only matters if the detector also catches brand-new attacker websites, not just ones similar to its training data.
+Phishing is when a fake link pretends to be a trusted website to steal someone's login or payment details. In 2025 alone, security groups tracked over 3.8 million phishing attacks~\cite{apwg2026}. A good detector could catch these links before anyone clicks them. Past work already reports very accurate results~\cite{prasad2024}, but that only matters if the detector also catches brand-new attacker websites, not just ones like its training data.
 
 \subsection{Motivating Example}
 Imagine a message that says: ``Your PayPal account is locked. Fix it here: \url{https://paypal.login-fraud.top}.'' The word ``paypal'' sits in the link, but the real website behind it is \texttt{login-fraud.top}, a domain that has never been seen before. A useful detector needs to catch links like this even though it never trained on that exact website.
 
 \section{Gap and Project Objective}
-Most testing methods split data randomly, so subdomains of one company can land in both sets. The model is then not truly tested on something new because it has already learned about that company. Testing on a fully separate dataset can reduce scores by 10--32\%~\cite{rashid2024}. Even a 2026 method that split by host still allowed 1,387 matching registered domains across training and testing~\cite{ahamed2026}.
+Most testing methods split data randomly, so subdomains of one company, such as \texttt{mail.paypal.com}, can land in both sets. Then the model is not really tested on anything new because it already learned about that company. Cross-dataset transfer is difficult enough that a specialized domain-adaptation method recovered only 0.06 F1 on average and up to 0.2 in the best case~\cite{rashid2024}. Even a newer 2026 method that splits by host still allowed 1,387 matching domains to leak across~\cite{ahamed2026}.
 
-We will use the registered domain (for example, \texttt{paypal.com}) as the unit that must never repeat between training and testing. We compare a random split, a host-disjoint split, a registered-domain-disjoint split, and a cross-source split. Experiments use the 235,795-site PhiUSIIL dataset~\cite{prasad2024} plus an independent public URL dataset. Our contribution is a fair, reusable test protocol and a clear estimate of how much the old style of testing overstates performance.
+We will use the registrable domain (for example, \texttt{paypal.com}) as the one thing that must never repeat between training and testing. We compare a random split, a host-disjoint split, a registrable-domain-disjoint split, and a cross-source split on a second dataset. Experiments use the 235,795-site PhiUSIIL corpus~\cite{prasad2024} plus an independent public URL corpus. Our contribution is a fair, reusable test protocol and a real number for how much the old style of testing overstated performance.
 
 \section{Formal Problem Definition}
-In plain words, given a link, decide whether it is phishing or safe without ever training on that link's own website. Formally, let $\mathcal{U}$ be the set of all URLs, $\mathcal{Y}=\{0,1\}$, where 1 means phishing and 0 means safe, and let $r:\mathcal{U}\rightarrow\mathcal{R}$ map a URL to its registered domain. Given a labeled training set
+In plain words, given a link, decide whether it is phishing or safe without ever training on that link's own website. Formally, let $\mathcal{U}$ be the set of all URLs, $\mathcal{Y}=\{0,1\}$, where 1 means phishing and 0 means safe, and let $r:\mathcal{U}\rightarrow\mathcal{R}$ map a URL to its registrable domain. Given a labeled training set
 $D_{\mathrm{tr}}=\{(u_i,y_i)\}_{i=1}^{n}\subset\mathcal{U}\times\mathcal{Y}$,
 the task is to learn a function
 \[
  f:\mathcal{U}\rightarrow\mathcal{Y}
 \]
-that correctly labels a new URL $u$ whose registered domain never appeared in training:
+that correctly labels a new URL $u$ whose registrable domain never appeared in training:
 \[
  r(u)\notin\{r(u_i):(u_i,y_i)\in D_{\mathrm{tr}}\}.
 \]
-For cross-source testing, the test URLs also come from a dataset that was not used for $D_{\mathrm{tr}}$.
+In the cross-source setting, test URLs also come from a collection process never used for $D_{\mathrm{tr}}$.
 
 \subsection{Example Instance}
 For $u=$ \url{https://paypal.login-fraud.top}, suppose \texttt{login-fraud.top} is absent from training. The expected output is $f(u)=1$ (phishing).
 
 \section{Team and Collaboration}
-Prabhnoor checks the data sources and keeps the test splits leakage-free. Divraj runs the experiments and keeps the results reproducible. Dilraj combines the datasets, tracks experiments, manages the code repository, and studies where the model makes errors. All three work together on the problem definition, related work, code, experiments, and writing. Their skills cover data engineering, machine learning, and cybersecurity. Repository: \url{https://github.com/prabhnoob/domain-generalizable-phishing-url-detection}.
+Prabhnoor checks the data sources and keeps the test splits leakage-free. Divraj runs the experiments and keeps results reproducible. Dilraj combines the datasets, tracks experiments, manages the code repository, and studies where the model errs. All three work together on the problem definition, related work, code, experiments, and writing, with complementary data-engineering, machine-learning, and cybersecurity backgrounds. Repository: \url{https://github.com/prabhnoob/domain-generalizable-phishing-url-detection}.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
