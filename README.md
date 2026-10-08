@@ -1,6 +1,6 @@
 # Domain-Generalizable Phishing URL Detection
 
-This repository contains the course project proposal for evaluating phishing URL detectors under realistic, leakage-resistant data splits.
+This repository contains the course project milestones for evaluating phishing URL detectors under realistic, leakage-resistant data splits.
 
 ## Research problem
 
@@ -15,6 +15,9 @@ Given labeled URLs collected from multiple domains, learn a binary mapping from 
 - `proposal/01_Proposal.tex` — ACM conference-format LaTeX source
 - `proposal/references.bib` — bibliography
 - `proposal/01_Proposal.pdf` — compiled one-page proposal
+- `background/2_Background.tex` — Milestone 2 literature review (ACM `sigconf` LaTeX source)
+- `background/references.bib` — literature review bibliography (17 references)
+- `background/2_Background.pdf` — compiled two-page literature review
 
 ## Authors
 
@@ -26,12 +29,14 @@ University of Victoria, Victoria, Canada
 
 ## Build
 
-Open the files in Overleaf using the ACM `sigconf` template dependencies, or compile locally from the `proposal` directory:
+Open the files in Overleaf using the ACM `sigconf` template dependencies, or compile locally from each milestone directory:
 
 ```sh
-latexmk -pdf 01_Proposal.tex
+cd proposal && latexmk -pdf 01_Proposal.tex
+cd background && latexmk -pdf 2_Background.tex
 ```
 
 ## Status
 
-Milestone 1: Proposal.
+- Milestone 1: Proposal (complete)
+- Milestone 2: Background and related work / literature review (complete)
