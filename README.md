@@ -86,6 +86,8 @@ Create the reproducible data and split audit:
 python scripts/audit_phiusiil.py
 ```
 
+The first recorded full-data result is in `evaluation/results/phiusiil_lexical_domain.json`. It is a baseline result, not the final comparison; the random, host-disjoint, character-model, and cross-source experiments still need to be run.
+
 ## Reproducibility
 
 All randomized operations use an explicit seed. The default project seed is `474`.
