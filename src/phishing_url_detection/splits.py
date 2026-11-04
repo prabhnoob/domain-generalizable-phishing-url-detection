@@ -19,11 +19,14 @@ class DatasetSplit:
     group_column: str | None = None
 
 
-def _with_groups(frame: pd.DataFrame) -> pd.DataFrame:
+def with_groups(frame: pd.DataFrame, *, drop_invalid: bool = False) -> pd.DataFrame:
     grouped = frame.copy()
     grouped["host"] = grouped["url"].map(normalized_host)
     grouped["registrable_domain"] = grouped["url"].map(registrable_domain)
-    if grouped[["host", "registrable_domain"]].eq("").any().any():
+    invalid = grouped[["host", "registrable_domain"]].eq("").any(axis=1)
+    if drop_invalid:
+        return grouped.loc[~invalid].reset_index(drop=True)
+    if invalid.any():
         raise ValueError("Every URL must have a valid host and registrable domain")
     return grouped
 
@@ -38,7 +41,7 @@ def make_split(
     """Create one of the proposal's within-source evaluation splits."""
     if not 0 < test_size < 1:
         raise ValueError("test_size must be between 0 and 1")
-    grouped = _with_groups(frame)
+    grouped = with_groups(frame)
     methods = {
         "random": None,
         "host": "host",

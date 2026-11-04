@@ -15,7 +15,10 @@ def normalized_host(url: str) -> str:
     value = str(url).strip()
     if not value:
         return ""
-    parsed = urlsplit(value if "://" in value else f"http://{value}")
+    try:
+        parsed = urlsplit(value if "://" in value else f"http://{value}")
+    except ValueError:
+        return ""
     host = (parsed.hostname or "").strip(".").lower()
     try:
         return host.encode("idna").decode("ascii")

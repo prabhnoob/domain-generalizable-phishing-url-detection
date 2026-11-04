@@ -1,0 +1,21 @@
+{
+  "model": "lexical",
+  "split": "cross_source",
+  "seed": 474,
+  "train_rows": 235370,
+  "external_rows_before_domain_filter": 522172,
+  "external_invalid_rows_removed": 30,
+  "external_overlap_rows_removed": 94002,
+  "test_rows": 428140,
+  "metrics": {
+    "accuracy": 0.2675176344186481,
+    "precision": 0.15205237561670998,
+    "recall": 0.6788721696198221,
+    "f1": 0.24845607636101333,
+    "macro_f1": 0.2670461311602173,
+    "mcc": -0.1358217679289959,
+    "false_positive_rate": 0.8217726369531043,
+    "roc_auc": 0.40560989985065504,
+    "brier_score": 0.7144154176236408
+  }
+}

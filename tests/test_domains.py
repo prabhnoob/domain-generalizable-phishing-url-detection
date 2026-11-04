@@ -12,3 +12,7 @@ def test_registrable_domain_groups_subdomains():
 
 def test_ip_address_is_a_stable_group():
     assert registrable_domain("http://192.0.2.10/login") == "192.0.2.10"
+
+
+def test_malformed_ipv6_url_is_rejected_without_crashing():
+    assert normalized_host("http://[broken-ipv6/login") == ""

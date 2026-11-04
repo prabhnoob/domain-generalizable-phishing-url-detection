@@ -63,10 +63,13 @@ Available models are `lexical` (hand-made URL features) and `char` (character TF
 
 The main dataset is the [UCI PhiUSIIL Phishing URL dataset](https://archive.ics.uci.edu/dataset/967/phiusiil%2Bphishing%2Burl%2Bdataset), containing 235,795 rows. UCI stores `1 = legitimate` and `0 = phishing`; our loader reverses these values to match the proposal (`1 = phishing`, `0 = legitimate`). Raw datasets are intentionally excluded from Git.
 
+The independent cross-source dataset is Kaggle's CC0-licensed [Malicious URLs dataset](https://www.kaggle.com/datasets/sid321axn/malicious-urls-dataset). It contains raw URLs labeled as benign, phishing, malware, or defacement. We keep only benign and phishing rows so the task matches the proposal, then remove every test row whose registrable domain occurs in PhiUSIIL.
+
 Download the official UCI file:
 
 ```powershell
 python scripts/download_phiusiil.py
+python scripts/download_kaggle_malicious_urls.py
 ```
 
 Then run the main domain-disjoint experiment:
@@ -86,7 +89,19 @@ Create the reproducible data and split audit:
 python scripts/audit_phiusiil.py
 ```
 
-The first recorded full-data result is in `evaluation/results/phiusiil_lexical_domain.json`. It is a baseline result, not the final comparison; the random, host-disjoint, character-model, and cross-source experiments still need to be run.
+Recorded full-data results are stored under `evaluation/results/`. The large difference between the PhiUSIIL domain-disjoint baseline and the strict Kaggle cross-source result is preliminary evidence of dataset shift. It is not the final conclusion; the random, host-disjoint, and character-model comparisons still need to be run.
+
+Run strict cross-source evaluation:
+
+```powershell
+python -m phishing_url_detection evaluate `
+  --data data/raw/PhiUSIIL_Phishing_URL_Dataset.csv `
+  --phiusiil-labels `
+  --model lexical `
+  --external data/raw/kaggle-malicious-urls/malicious_phish.csv `
+  --external-format kaggle-malicious-urls `
+  --output output/phiusiil-to-kaggle-lexical
+```
 
 ## Reproducibility
 

@@ -25,3 +25,22 @@ def test_experiment_writes_reproducible_artifacts(tmp_path: Path):
     assert (tmp_path / "metrics.json").exists()
     assert (tmp_path / "predictions.csv").exists()
     assert (tmp_path / "model.joblib").exists()
+
+
+def test_cross_source_removes_training_domain_overlap(tmp_path: Path):
+    training = _dataset()
+    external = pd.DataFrame([
+        {"url": "https://safe0.com/new", "label": 0},
+        {"url": "https://unseen-safe.net/home", "label": 0},
+        {"url": "https://unseen-phish.net/verify-account", "label": 1},
+        {"url": "http://[broken-ipv6/login", "label": 1},
+    ])
+    result = run_experiment(
+        training, model_name="lexical", split_method="domain",
+        output_dir=tmp_path, seed=474, external_test=external,
+    )
+    assert result["split"] == "cross_source"
+    assert result["external_rows_before_domain_filter"] == 4
+    assert result["external_invalid_rows_removed"] == 1
+    assert result["external_overlap_rows_removed"] == 1
+    assert result["test_rows"] == 2

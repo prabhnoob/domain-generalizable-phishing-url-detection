@@ -38,3 +38,20 @@ def load_url_csv(path: str | Path, *, phiusiil_labels: bool = False) -> pd.DataF
     if invalid:
         raise ValueError(f"Labels must be binary; found {sorted(invalid)}")
     return result[result["url"].ne("")].drop_duplicates().reset_index(drop=True)
+
+
+def load_kaggle_malicious_urls(path: str | Path) -> pd.DataFrame:
+    """Load Kaggle ``sid321axn/malicious-urls-dataset`` for binary testing.
+
+    The source has benign, phishing, malware, and defacement classes. This
+    project keeps only benign and phishing so the task matches the proposal.
+    """
+    frame = pd.read_csv(path, usecols=["url", "type"])
+    frame = frame[frame["type"].isin(["benign", "phishing"])].copy()
+    frame["label"] = frame["type"].map({"benign": 0, "phishing": 1}).astype(int)
+    frame["url"] = frame["url"].astype(str).str.strip()
+    return (
+        frame.loc[frame["url"].ne(""), ["url", "label"]]
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
