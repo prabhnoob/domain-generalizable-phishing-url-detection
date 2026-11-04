@@ -1,0 +1,342 @@
+1
+
+
+
+                                    Faculty of Engineering and Computer Science                CSC503 × SENG747: Data Mining
+                                          Department of Computer Science                                 Fall 2026
+
+        #           Milestone                Generative AI Guidelines                 Due        Mark Release
+        3       Proposed Solution    D: AI Task Completion, Human Evaluation1 Nov. 4, Wed., AoE2 Nov. 9, Mon.
+
+    This course is project driven. Students will work in teams to define, develop, and complete a project in the field
+    of data mining/machine learning over the course of one semester. Each team will consist of undergraduate
+    students and one graduate student, who serves as the project lead, coordinating the project and guide the team
+    through the research and development process. The course project has two main objectives:
+
+            -    Hands-on experience: Gain practical experience in applying data mining and machine learning methods
+                 to a real-world problem, while developing skills in project planning, implementation, evaluation, and
+                 teamwork.
+            -    Research experience: Develop an understanding of the research process, from identifying a problem
+                 and reviewing existing approaches to designing, implementing, and evaluating a solution.
+
+    Projects should aim to advance the state of the art, rather than simply reproduce an existing solution. This
+    provides students with an opportunity to conduct meaningful research while completing the course requirements.
+
+    A research project typically starts with a problem and proposes a solution by designing, implementing, and
+    evaluating an algorithm or computational approach. In this sense, it may resemble a software project; however,
+    there are important differences. A software project may primarily focus on implementing or integrating existing
+    algorithms to build a functional system. In contrast, a research project should aim to investigate a problem,
+    identify a limitation or gap in existing approaches, and propose a solution that addresses that gap. The proposed
+    solution may involve (1) a new algorithm, (2) a modification or extension of an existing algorithm, (3) a new
+    combination/pipeline of existing techniques, or (4) a novel application of existing methods to a problem where
+    they have not been adequately explored. Therefore, the goal is not simply to implement an existing method, but
+    to make a meaningful contribution beyond what has already been done, supported by appropriate experiments
+    and evaluation. Roughly, a research project consists of the following milestones (phases):
+
+    1. Project Definition & Team Formation (Proposal)
+    2. Background & Related Work (Literature Review)
+    3. Solution Design & Implementation (Proposed Solution or Method)
+    4. Evaluation (Experimentation)
+    5. Project Presentation: 3-Minute Talk (3MT)
+    6. Project Management & Documentation (Graduate Student Only, Umbrella Activity)
+
+    A project manual has been prepared to guide students through each milestone. Each milestone breaks the project
+    into a series of smaller steps and deliverables. The current manual covers Milestone 3: Solution Design &
+    Implementation, also known as Proposed Solution or Method.
+
+                                  3.1. Formal Definition: Input & Output (Solution)
+    At a very high level of abstraction, any proposed method for solving a problem can be viewed as a function that
+    takes some input, performs a finite sequence of processing and/or calculations, and produces an output (i.e., a
+    solution). For example, suppose your proposed method is to “cluster people into groups of like-minded people”.
+
+    1 AI is used to complete certain elements of the task, with students providing discussion or commentary on the AI-generated content.
+
+    This level requires critical engagement with AI-generated content and evaluating its output (e.g. critique or evaluation of AI-generated
+    analysis). You will use AI to complete specific tasks in your assessment. Any AI-created content must be cited.
+    2
+     https://www.timeanddate.com/time/zones/aoe
+2
+
+
+
+    Informally, the input is “a collection of people”, and the output is “a collection of groups in which each person
+    belongs to a group”. This informal description, however, is not precise. Different readers may interpret it
+    differently:
+
+       -   Can a person belong to multiple groups?
+       -   What exactly does like-minded mean?
+       -   What does a collection mean? Is it a set, list, stack, …?
+       -   What constraints must the resulting groups satisfy?
+       -   How do we determine whether two people are similar?
+
+    To ensure that all readers have the same interpretation, we use the language of logic and mathematics to formally
+    define our proposed solution. We already performed a similar step when formally defining the problem in the
+    previous Milestone 1: Project Definition & Team Formation. For example, suppose we define the input as “a set
+    of people P”. Our proposed solution is “a function f that takes P as input and returns a partition of P. A partition
+    consists of non-empty subsets of P such that every person belongs to exactly one and only one subset of P.”
+
+           “Given a set of people P={𝑝! }$!"# , our proposed solution is a function f such that f(P) outputs a
+           partition on P that includes subsets of P such that each person 𝑝! ∈ P is a member of one and
+           only one subset (group), and the union of all subsets (groups) is equal to P. Formally,
+
+                                                  f: P ⇾ Powerset(P)
+                                     f(P) = {Cj| Cj⊆P, |Cj|>0, ∀Cj,Ck≠j Ci∩Cj=∅}
+
+           where Powerset of P is the set of all subsets of P. As an example, if P={p1, p2, p3}, then
+           f(P)={{p1, p3},{p2}}.”
+
+    Notice that we have not yet explained how f produces this output. We have only formally specified what the
+    input is and what constitutes a valid output.
+
+                                          3.2. Formal Definition: Algorithm
+    So far, we have formally specified the input and output of our proposed solution. We now need to describe how
+    our method transforms the input into the desired output. In a Data Mining or Machine Learning project, this
+    usually means specifying how the raw data are:
+
+       -   represented in a form suitable for computation;
+       -   preprocessed or transformed;
+       -   used to construct relevant embeddings, points, features or representations;
+       -   provided to a data mining or machine learning algorithm/model; and
+       -   transformed into the final prediction, ranking, clustering, recommendation, or other solution.
+
+    For example, to “cluster people into groups of like-minded people”, we first need to convert the raw information
+    about people into a representation that a machine learning algorithm can process.
+
+           “In our work, we represent each person 𝑝! ∈ P by the documents that she has published
+           within a time period T. So, given the set of all documents D = {di,t}, published by all persons
+           in P, where di,t is the document published by the person 𝑝! at time t; 1 ≤ t ≤ T, we calculate
+           the similarity of a pair of person (𝑝! , 𝑝% ) by calculating the similarity of their documents as
+           follows:
+                                            g(𝑝! , 𝑝% ) = ∑('"# ℎ(𝑑!,' , 𝑑%,' )
+3
+
+
+
+           where h is a function that calculates the similarity of a pair of documents based on the
+           number of words that are shared, i.e., the Jaccard distance:
+                                                           ) ∩)
+                                               h(d1, d2) = ! "
+                                                             )! ∪ )"
+           where di is a set of words in the document. Finally, we apply a portioning clustering
+           technique using g as the similarity (distance) measure to produce the subsets of people.”
+
+    This is only one possible definition of proposed solution. For a different project, the components of this pipeline
+    may be different. Your proposed solution should be sufficiently formal that a knowledgeable reader can
+    understand exactly what your method does, without having to guess important details. Depending on your
+    project, this may include:
+        • distance or similarity functions + justify the chosen function;
+        • model architecture or algorithm + justify the chose model;
+        • important parameters and hyperparameters;
+        • training procedure, if applicable, + justification;
+        • prediction/inference procedure + justification;
+
+    You do not need to mathematically formalize every line of your implementation. Instead, focus on the key
+    computational steps that define your proposed method.
+
+    Important: A machine learning algorithm is not simply saying “we use k-means,” “we use a neural network,”
+    or “we use a Random Forest.” Your proposed solution should explain how the data are represented, what
+    information is provided to the model, what the model computes, and how its output becomes the final solution.
+
+    Important: Formalizing a proposed solution can be challenging. That is expected. The goal is not to make the
+    mathematics unnecessarily complicated, but to remove ambiguity and precisely communicate what your
+    proposed method is supposed to produce.
+
+                                           3.3. Formal Definition: Pseudo-code
+    You need to support your formal algorithmic description with pseudo-code. Pseudo-code is not your program
+    written line-by-line in a specific programming language. Instead, it describes the overall logic and flow of your
+    solution using a language-independent notation, including important steps necessary to transform the input into
+    the final solution, such that a reader can understand what the solution does without reading the source code.
+4
+
+
+
+
+                                                  3.4. Illustrative Figure
+    You need to further support your proposed algorithm with an illustrative figure, such as a flowchart, data/model
+    diagram, architecture diagram, sequence diagram, or another appropriate visualization. Recall that in
+    undergraduate Software Engineering courses, you may have learned how to document software systems visually.
+    Here, the purpose is similar: use a visual representation to help the reader understand how your proposed method
+    works. For instance,
+
+
+
+
+                                              3.5. Implementation (Code)
+    By implementation, or code, we mean the actual program you write in a programming language to process the
+    input and produce the proposed solution. Your implementation should follow the FAIR Guiding Principles3,
+    which promote making digital project objects Findable, Accessible, Interoperable, and Reusable (by a human or
+    even a machine/agent). For this course, this means that your project should make a reasonable effort to ensure
+    that another person can locate your code, understand how it works, install its dependencies, and run it. Your code
+    should therefore:
+
+          -    Be publicly available online, preferably in a repository such as GitHub or GitLab.                                 Commented [A1]: At your team's discretion. We do not
+          -    Follow an organized code architecture/structure. Your project should be organized into appropriate files,          require public repo for this course due to students'
+                                                                                                                                  personal information and privacy, but it should be
+               folders, modules, and components rather than placing the entire implementation in a single script or               accessible to instructors and markers for evaluation
+               notebook. The organization should make it clear where data processing, feature extraction,                         purposes.
+               model/algorithm implementation, training, evaluation, and other major components are located. See
+               Appendix A: Recommended Code Structure.
+          -    Be runnable without errors. Your repository should demonstrate a successful run, including:
+                   o quickstart script to show a sample successful run;
+                   o cloning the repository (git clone {your repo});
+                   o creating/installing the required environment (pip install -r requirement.txt);
+                   o installing dependencies using a requirements file (e.g., requirements.txt);
+                   o downloading public datasets when they are not included in the repository (wget); and
+                   o running the main program.
+
+          -    Be consistent with your proposed solution. The implementation should follow the algorithm and
+               methodology described in your report. In particular, the important processing steps implemented in the
+               code should correspond to what you formally define in your repor.
+
+          -    Include clear documentation. Your repository should include a README (or equivalent documentation)
+               explaining how to install and run the project. At minimum, a reader should be able to understand what
+               the project does, how to set it up, and how to execute it.
+
+    3
+        The FAIR Guiding Principles for scientific data management and stewardship: https://www.nature.com/articles/sdata201618
+5
+
+
+
+
+        -
+
+    3.5.1. Reproducible and Repeatable Results
+    Your implementation should also produce reproducible/repeatable results when the same input and settings are
+    used. There are different definitions and distinctions between reproducibility and replicability in the academic
+    community. For the purpose of this course, the practical expectation is that “given the same input data, code,
+    configuration, and random seed, another person should be able to run your implementation and obtain the
+    same results.” For instance, if your report says that if P={p1, p2, p3}, then f(P)={{p1, p3},{p2}}, then someone
+    downloading your repository should be able to provide the same input P={p1, p2, p3} and obtain the same result
+    f(P)={{p1, p3},{p2}} under the same experimental settings. Many machine learning algorithms contain
+    randomized operations. In such cases, you should explicitly control the random seed where possible. For
+    example, in Python:
+
+    import random
+    random.seed(0)
+    import torch
+    torch.manual_seed(0)
+    import numpy as np
+    np.random.seed(0)
+
+    If your method uses additional libraries or sources of randomness, you should also consider whether their random
+    states need to be controlled.
+
+                                               3.6. Submission Guidelines
+    2.2.1. Deliverables
+        - Submission must be written in English, in the current ACM two-column conference format in LaTeX.
+           Overleaf4 templates are available from the ACM Website5. Use the sigconf proceedings template.
+        - The submission must be exactly 2 pages in length, no more and no less, including author list, figures,
+           tables, and references, and must be authored by all team members, with the graduate student listed last
+           in the author list. We understand that fitting all the required content into exactly two pages can be
+           challenging. However, this is intentional: an important part of communication is learning how to retouch,
+           refine, condense, and prioritize information without losing its essential meaning. We recommend initially
+           writing a longer version (e.g., 5-10 pages) and then gradually reducing and retouching it until you can
+           effectively communicate the key ideas within the required two-page limit.
+        - The submission must be a single zip file named: 3_Solution_Firstname1_Firstname2_[...].zip, e.g.,
+           3_Solution_Reia_Ali_Luiz_Hossein.zip, containing:
+               o The LaTeX source files and any required supplementary files;
+               o The compiled two-page PDF file.
+           A sample is attached to this manual and is also available here6 (2_Solution.tex).
+
+    2.2.2. Team and Individual Contributions
+        - Each team must maintain a Git-based repository (e.g., GitLab, GitHub, …)7 for the project and linked to
+
+    4
+      https://www.overleaf.com/gallery/tagged/acm-official
+    5
+      https://www.acm.org/publications/proceedings-template
+    6
+      https://www.overleaf.com/read/bsrxtwqgggsb
+    7 Web-based applications and cloud services may collect, use and/or disclose your personal information and store or access
+
+    that information outside of Canada. Personal information includes, but not limited to, identifiable individual’s information such
+    as your name or your email address. At UVic, GitLab at gitlab.uvic.ca is highly recommended for coursework, research and
+    projects. For more information, see https://www.uvic.ca/systems/services/pages/gitlab.php. At your team’s discretion, you
+    may use GitHub to store information about your project, but we do not require nor recommend storing any personal identifying
+    information. Also, we do not require public repo, but it should be accessible to instructors and markers for evaluation purposes.
+6
+
+
+
+             the Abstract. The repository must be associated with the individual accounts of all team members. The
+             repository will be used to document the development of the project and to make individual contributions
+             traceable. The repository should be used throughout the project rather than only immediately before a
+             submission deadline. The lab instructor and/or marker may consider the repository’s commit history, pull
+             requests, issues, documentation, and other project records when assess individual contributions. The
+             number of commits alone will not be used as a measure of contribution. The quality, significance, and
+             nature of each member's contributions will also be considered.
+       -     The graduate student serves as the project lead, responsible for coordinating the process, maintaining the
+             overall project direction, and ensuring that the project develops toward a meaningful contribution.
+             However, the project lead is also expected to be an active contributor, participating in activities such as
+             problem formulation, literature review, methodology development, implementation, experimentation,
+             analysis, and writing.
+       -     Undergraduate members contribute to the project activities under the guidance of the project lead. All
+             team members are expected to make substantive contributions, and no member should be limited solely
+             to coordination or project management.
+       -     As part of Milestone 6. Project Management & Documentation (Graduate Student Only), the
+             graduate student (project lead) is expected to document each member’s contributions throughout the
+             project, with a brief contribution statement provided at each major project milestone. These statements
+             will be compiled into the final project management report.
+
+    2.2.3.   Marking Scheme
+        -    05% Author list, style, format, repo, file naming convention, …
+        -    05% Abstract + Introduction
+        -    20% Formal Definition
+        -    10% Pseudo-code
+        -    10% Illustrative Figure
+        -    50% Code (FAIR-compliant) Please also see Appendix A: Recommended Code Structure.                             Commented [A2]: Making the repo public is at your
+                o 20% Architecture (Layers, driver, …).                                                                    team's discretion. We do not require public repo for this
+                                                                                                                           course due to students' personal information and privacy,
+                o 10% README (Project bio, installation, features, licenese, …)                                            but it should be accessible to instructors and markers for
+                o 10% Quickstart script                                                                                    evaluation purposes.
+                o 10% Reproducible/Repeatable results
+
+
+    Appendix A: Recommended Codebase Structure
+
+    This is a template suggested for project implementation based on my experience in data science, machine
+    learning, and software development projects. It is important to note that
+         - This is a general template and should be adjusted for any projects’ need,
+         - The main goal is to make your codebase useful enough that other researchers can reproduce and replicate
+            your work, fork your repository, build on top of it, and happily choose it as a baseline; without needing
+            your involvement! The more people who use, extend, and cite your code, the more visible and impactful
+            your work becomes.
+         - Your suggestions are more than welcome.
+
+    README.md
+      1. Intro [Overview]
+      2. Illustrative Sample
+      3. Prerequisite [Package Requirements]
+      4. Installation Guide
+      5. Quick Start
+7
+
+
+
+        6. Results
+        7. Citation
+        8. License
+
+    requirements.txt #for dependencies of this project and other libs and packages
+    environment.yml #for creating conda environment with automatic installation of required packages
+
+    \data
+       - \raw #the original dataset for the testbed
+       - \preprocessed #the final dataset required for this project
+
+    \output #the output of the codes in src such as models, logs, …
+
+    \evaluation
+        - \ground_truth [gold_standard]
+        - \results #comparison results between the proposed method and the baselines
+               o charts
+               o flat files
+        - \reports:
+
+    \src
+        -   \libs #any opensource library that are customized for this project
+        -   \cmn #any common code to other parts of the project
+        -   \[method] #the implementation of the proposed method with a proper name
+        -   main.[py, c, …] #the main entry of the project’s pipeline
+

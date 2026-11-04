@@ -1,0 +1,123 @@
+Domain-Generalizable Phishing URL Detection under Realistic
+Evaluation Splits
+Prabhnoor Singh (V01026954)
+
+Divraj Singh (V01054424)
+
+Dilraj Gulati (V01050215)
+
+University of Victoria
+Victoria, Canada
+prabhnoorsingh@uvic.ca
+
+University of Victoria
+Victoria, Canada
+divrajsingh@uvic.ca
+
+University of Victoria
+Victoria, Canada
+dilrajgulati@uvic.ca
+
+Abstract
+
+3
+
+Machine-learning phishing detectors often report very high accuracy when URL datasets are split randomly. However, a real detector
+must identify phishing URLs from domains it has never seen before.
+We study phishing URL detection using realistic evaluation splits. In
+the main test, every registered domain (effective top-level domain
+plus one, or eTLD+1) in the test set is excluded from training. We
+compare random, host-disjoint, eTLD+1-disjoint, and cross-source
+splits to measure how random splits can make results look better
+than they really are.
+
+Let U be the set of URL strings, Y = {0, 1}, and 𝑟 : U → R map
+a URL to its registrable domain (eTLD+1). Label 𝑦 = 1 denotes
+phishing and 𝑦 = 0 denotes legitimate. Given a labeled training
+corpus 𝐷 tr = {(𝑢𝑖 , 𝑦𝑖 )}𝑛𝑖=1 ⊂ U × Y, the task is to learn a function
+
+1
+
+Introduction and Motivation
+
+Phishing pages pretend to be trusted websites so they can steal
+passwords and financial information. The Anti-Phishing Working
+Group recorded 3.8 million attacks in 2025 [2]. A system can inspect
+a URL before a user opens it, so accurate detection could protect
+browsers, email systems, and messaging apps. Previous work reports strong machine-learning results [3], but a useful detector
+must find attacks from new domains without blocking too many
+safe URLs.
+
+1.1
+
+Motivating Example
+
+Consider a message asking a user to verify a PayPal account at
+https://paypal.login-fraud.top. The URL contains the trusted name
+“PayPal,” but its registered domain is login-fraud.top. If the system marks this URL as phishing before it opens, it may stop the
+user from entering a password, even though the domain was not in
+the training data.
+
+2
+
+Gap and Project Objective
+
+Random splits can place similar URLs in both training and test sets.
+A model may then remember domains instead of learning general
+phishing patterns. In earlier work, performance dropped by 10–32%
+when models were tested on a different dataset [4]. A 2026 study
+used separate hosts but still found 1,387 shared eTLD+1 domains in
+training and testing [1]. This means that subdomains of the same
+registered domain can appear on both sides of the split.
+We will group URLs by eTLD+1 and compare random-record,
+host-disjoint, eTLD+1-disjoint, and cross-source tests. Experiments
+will use the PhiUSIIL dataset of 235,795 websites [3] and a second public URL dataset. We will measure recall, precision, macroF1, Matthews correlation, false-positive rate, and calibration. The
+project will provide a repeatable splitting method and show how
+much random splitting may overestimate real-world performance.
+
+Formal Problem Definition
+
+𝑓 :U→Y
+that predicts the label of each test URL 𝑢. The registered domain of
+every test URL must be absent from the training set:
+𝑟 (𝑢) ∉ {𝑟 (𝑢𝑖 ) : (𝑢𝑖 , 𝑦𝑖 ) ∈ 𝐷 tr }.
+For cross-source testing, the test URLs also come from a different
+dataset. The output is one binary label for each URL. This definition
+does not require any specific model or set of features.
+
+3.1
+
+Example Instance
+
+For 𝑢 = https://paypal.login-fraud.top, suppose login-fraud.top
+is absent from training. The expected output is 𝑓 (𝑢) = 1 (phishing).
+
+4
+
+Team and Collaboration
+
+Prabhnoor leads data-source checks and split validation. Divraj
+leads model testing and makes sure experiments can be repeated.
+Dilraj leads dataset integration, experiment tracking, repository
+maintenance, and error analysis. The team combines data engineering, machine learning, and cybersecurity skills. All members
+help with problem definition, literature review, implementation,
+experiments, analysis, and writing. Repository: https://github.com/
+prabhnoob/domain-generalizable-phishing-url-detection.
+
+References
+[1] Tanvir Ahamed, Shawon Chakrabarty Kakon, Fahmid Al Farid, Jia Uddin, and
+Hezerul Bin Abdul Karim. 2026. An Integrated Evaluation Protocol for Adversarial
+Robustness, Generalization, and Explanation Stability in URL-Based Phishing
+Detection. Frontiers in Computer Science 8 (2026). doi:10.3389/fcomp.2026.1834407
+[2] Anti-Phishing Working Group. 2026. Phishing Activity Trends Report: Fourth
+Quarter 2025. Technical Report. Anti-Phishing Working Group. https://docs.
+apwg.org/reports/apwg_trends_report_q4_2025.pdf
+[3] Arvind Prasad and Shalini Chandra. 2024. PhiUSIIL: A Diverse Security Profile
+Empowered Phishing URL Detection Framework Based on Similarity Index and
+Incremental Learning. Computers & Security 136 (2024), 103545. doi:10.1016/j.
+cose.2023.103545
+[4] Fariza Rashid, Ben Doyle, Soyeon Caren Han, and Suranga Seneviratne. 2024.
+Phishing URL Detection Generalisation Using Unsupervised Domain Adaptation.
+Computer Networks 245 (2024), 110398. doi:10.1016/j.comnet.2024.110398
+
+

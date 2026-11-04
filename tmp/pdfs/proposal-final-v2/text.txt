@@ -1,0 +1,128 @@
+Domain-Generalizable Phishing URL Detection under Realistic
+Evaluation Splits
+Prabhnoor Singh (V01026954)
+
+Divraj Singh (V01054424)
+
+Dilraj Gulati (V01050215)
+
+University of Victoria
+Victoria, Canada
+prabhnoorsingh@uvic.ca
+
+University of Victoria
+Victoria, Canada
+divrajsingh@uvic.ca
+
+University of Victoria
+Victoria, Canada
+dilrajsinghgulati@gmail.com
+
+Abstract
+
+3
+
+Phishing websites copy real websites to steal passwords and money.
+Most machine-learning tools that catch phishing links are tested
+the easy way: the data is shuffled first, so the same website family
+can end up in both training and testing. This makes the tool look
+better than it really is. We test detectors the honest way, using test
+websites from domains the model has never seen, and measure how
+much accuracy drops once the shortcuts are removed.
+
+In plain words, given a link, decide whether it is phishing or safe
+without ever training on that link’s own website. Formally, let U
+be the set of all URLs, Y = {0, 1}, where 1 means phishing and 0
+means safe, and let 𝑟 : U → R map a URL to its registrable domain.
+Given a labeled training set 𝐷 tr = {(𝑢𝑖 , 𝑦𝑖 )}𝑛𝑖=1 ⊂ U × Y, the task
+is to learn a function
+𝑓 :U→Y
+that correctly labels a new URL 𝑢 whose registrable domain never
+appeared in training:
+
+Keywords
+phishing detection, domain generalization, evaluation methodology,
+machine learning
+
+1
+
+Introduction and Motivation
+
+Phishing is when a fake link pretends to be a trusted website to steal
+someone’s login or payment details. In 2025 alone, security groups
+tracked over 3.8 million phishing attacks [2]. A good detector could
+catch these links before anyone clicks them. Past work already
+reports very accurate results [3], but that only matters if the detector
+also catches brand-new attacker websites, not just ones like its
+training data.
+
+Formal Problem Definition
+
+𝑟 (𝑢) ∉ {𝑟 (𝑢𝑖 ) : (𝑢𝑖 , 𝑦𝑖 ) ∈ 𝐷 tr }.
+In the cross-source setting, test URLs also come from a collection
+process never used for 𝐷 tr .
+
+3.1
+
+Example Instance
+
+For 𝑢 = https://paypal.login-fraud.top, suppose login-fraud.top
+is absent from training. The expected output is 𝑓 (𝑢) = 1 (phishing).
+
+4
+
+Team and Collaboration
+
+Imagine a message that says: “Your PayPal account is locked. Fix it
+here: https://paypal.login-fraud.top.” The word “paypal” sits in the
+link, but the real website behind it is login-fraud.top, a domain
+that has never been seen before. A useful detector needs to catch
+links like this even though it never trained on that exact website.
+
+Prabhnoor checks the data sources and keeps the test splits leakagefree. Divraj runs the experiments and keeps results reproducible.
+Dilraj combines the datasets, tracks experiments, manages the
+code repository, and studies where the model errs. All three
+work together on the problem definition, related work, code, experiments, and writing, with complementary data-engineering,
+machine-learning, and cybersecurity backgrounds. Repository:
+https://github.com/prabhnoob/domain-generalizable-phishingurl-detection.
+
+2
+
+References
+
+1.1
+
+Motivating Example
+
+Gap and Project Objective
+
+Most testing methods split data randomly, so subdomains of one
+company, such as mail.paypal.com, can land in both sets. Then
+the model is not really tested on anything new because it already
+learned about that company. Cross-dataset transfer is difficult
+enough that a specialized domain-adaptation method recovered
+only 0.06 F1 on average and up to 0.2 in the best case [4]. Even a
+newer 2026 method that splits by host still allowed 1,387 matching
+domains to leak across [1].
+We will use the registrable domain (for example, paypal.com)
+as the one thing that must never repeat between training and testing. We compare a random split, a host-disjoint split, a registrabledomain-disjoint split, and a cross-source split on a second dataset.
+Experiments use the 235,795-site PhiUSIIL corpus [3] plus an independent public URL corpus. Our contribution is a fair, reusable test
+protocol and a real number for how much the old style of testing
+overstated performance.
+
+[1] Tanvir Ahamed, Shawon Chakrabarty Kakon, Fahmid Al Farid, Jia Uddin, and
+Hezerul Bin Abdul Karim. 2026. An Integrated Evaluation Protocol for Adversarial
+Robustness, Generalization, and Explanation Stability in URL-Based Phishing
+Detection. Frontiers in Computer Science 8 (2026). doi:10.3389/fcomp.2026.1834407
+[2] Anti-Phishing Working Group. 2026. Phishing Activity Trends Report: Fourth
+Quarter 2025. Technical Report. Anti-Phishing Working Group. https://docs.
+apwg.org/reports/apwg_trends_report_q4_2025.pdf
+[3] Arvind Prasad and Shalini Chandra. 2024. PhiUSIIL: A Diverse Security Profile
+Empowered Phishing URL Detection Framework Based on Similarity Index and
+Incremental Learning. Computers & Security 136 (2024), 103545. doi:10.1016/j.
+cose.2023.103545
+[4] Fariza Rashid, Ben Doyle, Soyeon Caren Han, and Suranga Seneviratne. 2024.
+Phishing URL Detection Generalisation Using Unsupervised Domain Adaptation.
+Computer Networks 245 (2024), 110398. doi:10.1016/j.comnet.2024.110398
+
+

@@ -1,0 +1,72 @@
+\documentclass[sigconf,nonacm]{acmart}
+
+\setcopyright{none}
+\settopmatter{printacmref=false,printccs=false,printfolios=false,authorsperrow=3}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\pagestyle{plain}
+\setlength{\bibsep}{1pt}
+
+\title{Domain-Generalizable Phishing URL Detection under Realistic Evaluation Splits}
+
+\author{Prabhnoor Singh (V01026954)}
+\affiliation{%
+  \institution{University of Victoria}
+  \city{Victoria}
+  \country{Canada}}
+\email{prabhnoorsingh@uvic.ca}
+\author{Divraj Singh (V01054424)}
+\affiliation{%
+  \institution{University of Victoria}
+  \city{Victoria}
+  \country{Canada}}
+\email{divrajsingh@uvic.ca}
+\author{Dilraj Gulati (V01050215)}
+\affiliation{%
+  \institution{University of Victoria}
+  \city{Victoria}
+  \country{Canada}}
+\email{dilrajgulati@uvic.ca}
+\renewcommand{\shortauthors}{Singh, Singh, and Gulati}
+
+\begin{document}
+
+\begin{abstract}
+Machine-learning phishing detectors often report near-perfect results on randomly divided URL collections, yet deployment requires recognizing attacks from domains absent during training. We define domain-generalizable phishing URL detection under leakage-resistant evaluation: classify an unseen URL when its registrable domain (effective top-level domain plus one, eTLD+1) is excluded from training. Comparing random, host-disjoint, eTLD+1-disjoint, and cross-source tests will quantify how much conventional evaluation overstates operational performance.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction and Motivation}
+Phishing pages impersonate trusted services to steal credentials and financial information. The Anti-Phishing Working Group observed 3.8 million attacks in 2025~\cite{apwg2026}. Because a URL can be inspected before navigation, reliable classification could protect browsers, email gateways, and messaging platforms. Prior work reports accurate machine-learning detection~\cite{prasad2024}; operational value, however, depends on recognizing new attacker domains without excessive false alarms.
+
+\subsection{Motivating Example}
+Consider a message asking the user to verify a PayPal account at \url{https://paypal.login-fraud.top}. Although the trusted brand appears on the left, the registrable domain is \texttt{login-fraud.top}. Flagging it as phishing before navigation could prevent credential disclosure, even when this domain never appeared in training.
+
+\section{Gap and Project Objective}
+Random splits can place related URLs in training and testing, making memorization resemble generalization. Cross-dataset transfer has reduced detector performance by 10--32\%~\cite{rashid2024}. A 2026 protocol uses host-disjoint splits but reports 1,387 shared eTLD+1 domains between training and testing~\cite{ahamed2026}; subdomains of one registrable domain can therefore cross the boundary.
+
+We will treat eTLD+1 as the grouping unit and compare random-record, host-disjoint, eTLD+1-disjoint, and cross-source evaluation. Experiments will use the 235,795-site PhiUSIIL corpus~\cite{prasad2024} and an independent public URL corpus. We ask how estimated performance changes as leakage controls strengthen and whether conclusions persist across recall, precision, macro-F1, Matthews correlation, false-positive rate, and calibration. The contribution is a reproducible split protocol and an estimate of evaluation optimism.
+
+\section{Formal Problem Definition}
+Let $\mathcal{U}$ be the set of URL strings, $\mathcal{Y}=\{0,1\}$, and $r:\mathcal{U}\rightarrow\mathcal{R}$ map a URL to its registrable domain (eTLD+1). Label $y=1$ denotes phishing and $y=0$ denotes legitimate. Given a labeled training corpus
+$D_{\mathrm{tr}}=\{(u_i,y_i)\}_{i=1}^{n}\subset\mathcal{U}\times\mathcal{Y}$,
+the task is to learn a function
+\[
+ f:\mathcal{U}\rightarrow\mathcal{Y}
+\]
+that predicts the label of each URL $u$ drawn from a test distribution whose registered-domain support is disjoint from training:
+\[
+ r(u)\notin\{r(u_i):(u_i,y_i)\in D_{\mathrm{tr}}\}.
+\]
+In cross-source evaluation, test URLs also come from a collection process absent from $D_{\mathrm{tr}}$. The output is one Boolean label per URL; no model or feature representation is assumed.
+
+\subsection{Example Instance}
+For $u=$ \url{https://paypal.login-fraud.top}, suppose \texttt{login-fraud.top} is absent from training. The expected output is $f(u)=1$ (phishing).
+
+\section{Team and Collaboration}
+Prabhnoor leads provenance and split validation; Divraj leads benchmarking and reproducibility; Dilraj leads dataset integration, experiment tracking, repository maintenance, and error analysis. Their complementary data-engineering, ML, and cybersecurity experience motivates the team. All members contribute to formulation, review, implementation, experiments, analysis, and writing. Repository: \url{[INSERT-GIT-REPOSITORY-URL]}.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}
