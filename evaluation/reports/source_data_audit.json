@@ -1,0 +1,52 @@
+{
+  "phiusiil": {
+    "rows": 235370,
+    "scheme_less_rows": 0,
+    "scheme_less_share": 0.0,
+    "urls_with_conflicting_labels": 0,
+    "classes": {
+      "legitimate": {
+        "rows": 134850,
+        "share": 0.5729277308068148,
+        "scheme_less_rows": 0,
+        "scheme_less_share": 0.0
+      },
+      "phishing": {
+        "rows": 100520,
+        "share": 0.4270722691931852,
+        "scheme_less_rows": 0,
+        "scheme_less_share": 0.0
+      }
+    },
+    "raw_urls_with_conflicting_labels": 0
+  },
+  "kaggle_binary_subset": {
+    "rows": 522160,
+    "scheme_less_rows": 461935,
+    "scheme_less_share": 0.8846617894898116,
+    "urls_with_conflicting_labels": 0,
+    "classes": {
+      "legitimate": {
+        "rows": 428074,
+        "share": 0.8198138501608703,
+        "scheme_less_rows": 392684,
+        "scheme_less_share": 0.9173273779767049
+      },
+      "phishing": {
+        "rows": 94086,
+        "share": 0.18018614983912976,
+        "scheme_less_rows": 69251,
+        "scheme_less_share": 0.7360393682375699
+      }
+    },
+    "raw_urls_with_conflicting_labels": 6
+  },
+  "timestamp_columns": {
+    "phiusiil": [],
+    "kaggle": []
+  },
+  "notes": [
+    "The audit uses project labels: 0=legitimate, 1=phishing.",
+    "Scheme-less counts support the proposed canonicalization ablation; no model result is changed here."
+  ]
+}

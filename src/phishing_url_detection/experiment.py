@@ -8,17 +8,28 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
-from .metrics import classification_metrics
+from .metrics import classification_metrics, threshold_at_target_fpr
 from .models import build_model
+from .reproducibility import set_global_seed
 from .splits import DatasetSplit, make_split, with_groups
+from .domains import canonicalize_url
 
 
 def run_experiment(
     frame: pd.DataFrame, *, model_name: str, split_method: str,
     output_dir: str | Path, test_size: float = 0.2, seed: int = 474,
-    external_test: pd.DataFrame | None = None,
+    external_test: pd.DataFrame | None = None, canonicalize: bool = False,
+    feature_view: str = "full", target_fpr: float = 0.01,
 ) -> dict:
     """Train one baseline and save reproducible results."""
+    set_global_seed(seed)
+    frame = frame.copy()
+    if canonicalize:
+        frame["url"] = frame["url"].map(canonicalize_url)
+    if external_test is not None:
+        external_test = external_test.copy()
+        if canonicalize:
+            external_test["url"] = external_test["url"].map(canonicalize_url)
     external_rows_before_filter = None
     external_invalid_rows_removed = None
     external_overlap_rows_removed = None
@@ -42,13 +53,29 @@ def run_experiment(
             method="cross_source",
         )
 
-    model = build_model(model_name, seed=seed)
+    validation_method = split_method if external_test is None else "domain"
+    validation = make_split(
+        split.train, validation_method, test_size=0.2, seed=seed
+    )
+    threshold_model = build_model(model_name, seed=seed, feature_view=feature_view)
+    threshold_model.fit(validation.train["url"], validation.train["label"])
+    validation_probabilities = threshold_model.predict_proba(validation.test["url"])[:, 1]
+    decision_threshold = threshold_at_target_fpr(
+        validation.test["label"], validation_probabilities, target_fpr
+    )
+
+    model = build_model(model_name, seed=seed, feature_view=feature_view)
     model.fit(split.train["url"], split.train["label"])
-    predictions = model.predict(split.test["url"])
     probabilities = model.predict_proba(split.test["url"])[:, 1]
+    predictions = (probabilities >= decision_threshold).astype(int)
     metrics = classification_metrics(split.test["label"], predictions, probabilities)
     result = {
         "model": model_name, "split": split.method, "seed": seed,
+        "canonicalize": canonicalize, "feature_view": feature_view,
+        "target_fpr": target_fpr,
+        "decision_threshold": decision_threshold,
+        "threshold_validation_method": validation_method,
+        "threshold_validation_rows": len(validation.test),
         "train_rows": len(split.train), "test_rows": len(split.test),
         "metrics": metrics,
     }

@@ -2,12 +2,27 @@
 
 from __future__ import annotations
 
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 import tldextract
 
 
 _EXTRACT = tldextract.TLDExtract(suffix_list_urls=())
+
+
+def canonicalize_url(url: str) -> str:
+    """Return the source-normalized URL string used by the C1 ablation.
+
+    This intentionally removes scheme information, a leading ``www.``,
+    percent encoding, and trailing slashes. It is optional because it changes
+    the feature representation and therefore requires separately named runs.
+    """
+    value = unquote(str(url).strip()).lower()
+    if "://" in value:
+        value = value.split("://", 1)[1]
+    if value.startswith("www."):
+        value = value[4:]
+    return value.rstrip("/")
 
 
 def normalized_host(url: str) -> str:

@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -44,3 +45,19 @@ def test_cross_source_removes_training_domain_overlap(tmp_path: Path):
     assert result["external_invalid_rows_removed"] == 1
     assert result["external_overlap_rows_removed"] == 1
     assert result["test_rows"] == 2
+
+
+def test_same_seed_produces_identical_metrics(tmp_path: Path):
+    first_dir = tmp_path / "first"
+    second_dir = tmp_path / "second"
+    run_experiment(
+        _dataset(), model_name="lexical", split_method="domain",
+        output_dir=first_dir, test_size=0.25, seed=474,
+    )
+    run_experiment(
+        _dataset(), model_name="lexical", split_method="domain",
+        output_dir=second_dir, test_size=0.25, seed=474,
+    )
+    first = json.loads((first_dir / "metrics.json").read_text(encoding="utf-8"))
+    second = json.loads((second_dir / "metrics.json").read_text(encoding="utf-8"))
+    assert first == second

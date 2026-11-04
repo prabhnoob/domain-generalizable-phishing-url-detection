@@ -1,4 +1,4 @@
-from phishing_url_detection.domains import normalized_host, registrable_domain
+from phishing_url_detection.domains import canonicalize_url, normalized_host, registrable_domain
 
 
 def test_host_normalization_handles_scheme_and_case():
@@ -16,3 +16,7 @@ def test_ip_address_is_a_stable_group():
 
 def test_malformed_ipv6_url_is_rejected_without_crashing():
     assert normalized_host("http://[broken-ipv6/login") == ""
+
+
+def test_canonicalization_removes_source_formatting_cues():
+    assert canonicalize_url("HTTPS://WWW.Example.COM/a%20b/") == "example.com/a b"

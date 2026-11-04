@@ -49,8 +49,16 @@ def lexical_features(url: str) -> list[float]:
 class LexicalURLFeatures(TransformerMixin, BaseEstimator):
     """Scikit-learn transformer for lexical URL features."""
 
+    def __init__(self, view: str = "full"):
+        if view not in {"full", "host"}:
+            raise ValueError("view must be 'full' or 'host'")
+        self.view = view
+
     def fit(self, X, y=None):  # noqa: N803 - sklearn API
         return self
 
     def transform(self, X):  # noqa: N803 - sklearn API
-        return np.asarray([lexical_features(url) for url in X], dtype=float)
+        values = X
+        if self.view == "host":
+            values = [normalized_host(url) for url in X]
+        return np.asarray([lexical_features(url) for url in values], dtype=float)

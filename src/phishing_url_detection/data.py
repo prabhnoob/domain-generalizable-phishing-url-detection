@@ -11,6 +11,12 @@ URL_COLUMNS = ("url", "URL", "Url")
 LABEL_COLUMNS = ("label", "Label", "class", "Class")
 
 
+def _drop_conflicting_labels(frame: pd.DataFrame) -> pd.DataFrame:
+    """Remove every URL that appears with more than one class label."""
+    conflicts = frame.groupby("url")["label"].transform("nunique") > 1
+    return frame.loc[~conflicts].reset_index(drop=True)
+
+
 def _find_column(columns: pd.Index, candidates: tuple[str, ...], kind: str) -> str:
     for candidate in candidates:
         if candidate in columns:
@@ -37,7 +43,8 @@ def load_url_csv(path: str | Path, *, phiusiil_labels: bool = False) -> pd.DataF
     invalid = set(result["label"].unique()) - {0, 1}
     if invalid:
         raise ValueError(f"Labels must be binary; found {sorted(invalid)}")
-    return result[result["url"].ne("")].drop_duplicates().reset_index(drop=True)
+    result = result[result["url"].ne("")].drop_duplicates().reset_index(drop=True)
+    return _drop_conflicting_labels(result)
 
 
 def load_kaggle_malicious_urls(path: str | Path) -> pd.DataFrame:
@@ -50,8 +57,9 @@ def load_kaggle_malicious_urls(path: str | Path) -> pd.DataFrame:
     frame = frame[frame["type"].isin(["benign", "phishing"])].copy()
     frame["label"] = frame["type"].map({"benign": 0, "phishing": 1}).astype(int)
     frame["url"] = frame["url"].astype(str).str.strip()
-    return (
+    result = (
         frame.loc[frame["url"].ne(""), ["url", "label"]]
         .drop_duplicates()
         .reset_index(drop=True)
     )
+    return _drop_conflicting_labels(result)

@@ -10,14 +10,16 @@ from sklearn.preprocessing import StandardScaler
 from .features import LexicalURLFeatures
 
 
-def build_model(name: str, *, seed: int = 474) -> Pipeline:
+def build_model(name: str, *, seed: int = 474, feature_view: str = "full") -> Pipeline:
     """Build an interpretable lexical or learned character baseline."""
+    if name == "char" and feature_view != "full":
+        raise ValueError("feature_view applies only to the lexical model")
     classifier = LogisticRegression(
         class_weight="balanced", max_iter=1000, random_state=seed, solver="liblinear"
     )
     if name == "lexical":
         return Pipeline([
-            ("features", LexicalURLFeatures()),
+            ("features", LexicalURLFeatures(view=feature_view)),
             ("scale", StandardScaler()),
             ("classifier", classifier),
         ])

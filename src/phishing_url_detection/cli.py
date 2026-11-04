@@ -22,6 +22,9 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--phiusiil-labels", action="store_true")
     evaluate.add_argument("--external", help="optional second-source test CSV")
     evaluate.add_argument("--external-phiusiil-labels", action="store_true")
+    evaluate.add_argument("--canonicalize", action="store_true")
+    evaluate.add_argument("--feature-view", choices=("full", "host"), default="full")
+    evaluate.add_argument("--target-fpr", type=float, default=0.01)
     evaluate.add_argument(
         "--external-format",
         choices=("standard", "kaggle-malicious-urls"),
@@ -44,6 +47,8 @@ def main(argv: list[str] | None = None) -> int:
     result = run_experiment(
         frame, model_name=args.model, split_method=args.split, output_dir=args.output,
         test_size=args.test_size, seed=args.seed, external_test=external,
+        canonicalize=args.canonicalize, feature_view=args.feature_view,
+        target_fpr=args.target_fpr,
     )
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
