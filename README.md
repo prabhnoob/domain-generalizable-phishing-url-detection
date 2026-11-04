@@ -80,6 +80,12 @@ python -m phishing_url_detection evaluate `
   --output output/phiusiil-lexical-domain
 ```
 
+Create the reproducible data and split audit:
+
+```powershell
+python scripts/audit_phiusiil.py
+```
+
 ## Reproducibility
 
 All randomized operations use an explicit seed. The default project seed is `474`.

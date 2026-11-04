@@ -1,0 +1,21 @@
+{
+  "source": "UCI PhiUSIIL dataset 967",
+  "project_label_mapping": {
+    "0": "legitimate",
+    "1": "phishing"
+  },
+  "seed": 474,
+  "test_size": 0.2,
+  "rows_after_url_label_deduplication": 235370,
+  "class_counts": {
+    "legitimate": 134850,
+    "phishing": 100520
+  },
+  "domain_split": {
+    "train_rows": 183935,
+    "test_rows": 51435,
+    "train_registrable_domains": 140407,
+    "test_registrable_domains": 35102,
+    "overlapping_registrable_domains": 0
+  }
+}
