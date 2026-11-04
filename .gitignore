@@ -10,3 +10,13 @@
 *.xdv
 .DS_Store
 Thumbs.db
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+output/*
+!output/.gitkeep

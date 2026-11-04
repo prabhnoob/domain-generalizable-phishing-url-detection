@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+src/phishing_url_detection/__init__.py
+src/phishing_url_detection/data.py
+src/phishing_url_detection/domains.py
+src/phishing_url_detection/splits.py
+src/phishing_url_detection.egg-info/PKG-INFO
+src/phishing_url_detection.egg-info/SOURCES.txt
+src/phishing_url_detection.egg-info/dependency_links.txt
+src/phishing_url_detection.egg-info/requires.txt
+src/phishing_url_detection.egg-info/top_level.txt
+tests/test_domains.py
+tests/test_splits.py

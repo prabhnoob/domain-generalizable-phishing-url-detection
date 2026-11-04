@@ -1,0 +1,17 @@
+url,label
+https://www.uvic.ca,0
+https://calendar.uvic.ca,0
+https://www.canada.ca/en.html,0
+https://weather.gc.ca,0
+https://www.wikipedia.org,0
+https://en.wikipedia.org/wiki/Phishing,0
+https://www.python.org,0
+https://docs.python.org/3/,0
+https://paypal.login-fraud.top/verify,1
+http://secure-account-check.example/login,1
+http://bank-update.example/confirm?user=1,1
+http://198.51.100.42/paypal/signin,1
+https://microsoft.support-fraud.top/reset,1
+https://appleid.verify-now.example/auth,1
+http://free-prize.example/winner,1
+https://urgent-password-reset.example/login,1
