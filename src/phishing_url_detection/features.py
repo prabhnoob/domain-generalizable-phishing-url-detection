@@ -1,5 +1,3 @@
-"""URL-only lexical features for the interpretable baseline."""
-
 from __future__ import annotations
 
 import math
@@ -19,46 +17,52 @@ SUSPICIOUS_TOKENS = (
 )
 
 
-def _entropy(text: str) -> float:
+def entropy(text: str) -> float:
     if not text:
         return 0.0
     counts = Counter(text)
-    length = len(text)
-    return -sum((count / length) * math.log2(count / length) for count in counts.values())
+    n = len(text)
+    return -sum((c / n) * math.log2(c / n) for c in counts.values())
 
 
 def lexical_features(url: str) -> list[float]:
-    """Extract URL-string features without loading the webpage."""
-    value = str(url).strip().lower()
-    parsed = urlsplit(value if "://" in value else f"http://{value}")
-    host = normalized_host(value)
-    path = parsed.path or ""
-    query = parsed.query or ""
-    tokens = [token for token in re.split(r"[^a-z0-9]+", value) if token]
+    url = str(url).strip().lower()
+    parts = urlsplit(url if "://" in url else "http://" + url)
+    host = normalized_host(url)
+    path = parts.path or ""
+    query = parts.query or ""
+    words = [w for w in re.split(r"[^a-z0-9]+", url) if w]
+
     return [
-        len(value), len(host), len(path), len(query),
-        sum(char.isdigit() for char in value), value.count("."),
-        value.count("-"), value.count("@"), value.count("%"),
-        value.count("="), value.count("/"), len(tokens),
-        sum(token in SUSPICIOUS_TOKENS for token in tokens),
+        len(url),
+        len(host),
+        len(path),
+        len(query),
+        sum(ch.isdigit() for ch in url),
+        url.count("."),
+        url.count("-"),
+        url.count("@"),
+        url.count("%"),
+        url.count("="),
+        url.count("/"),
+        len(words),
+        sum(w in SUSPICIOUS_TOKENS for w in words),
         float(host.replace(".", "").isdigit()),
-        float(parsed.scheme == "https"), _entropy(value),
+        float(parts.scheme == "https"),
+        entropy(url),
     ]
 
 
 class LexicalURLFeatures(TransformerMixin, BaseEstimator):
-    """Scikit-learn transformer for lexical URL features."""
 
     def __init__(self, view: str = "full"):
         if view not in {"full", "host"}:
             raise ValueError("view must be 'full' or 'host'")
         self.view = view
 
-    def fit(self, X, y=None):  # noqa: N803 - sklearn API
+    def fit(self, X, y=None):
         return self
 
-    def transform(self, X):  # noqa: N803 - sklearn API
-        values = X
-        if self.view == "host":
-            values = [normalized_host(url) for url in X]
-        return np.asarray([lexical_features(url) for url in values], dtype=float)
+    def transform(self, X):
+        urls = [normalized_host(u) for u in X] if self.view == "host" else X
+        return np.asarray([lexical_features(u) for u in urls], dtype=float)

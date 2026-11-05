@@ -1,16 +1,14 @@
-"""Command-line interface for reproducible experiments."""
-
 from __future__ import annotations
 
 import argparse
 import json
 
 from .data import load_kaggle_malicious_urls, load_url_csv
-from .experiment import run_experiment
+from .experiment import predict_urls, run_experiment
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description="Leakage-resistant phishing URL evaluation")
     subparsers = parser.add_subparsers(dest="command", required=True)
     evaluate = subparsers.add_parser("evaluate", help="train and evaluate one baseline")
     evaluate.add_argument("--data", required=True)
@@ -30,11 +28,23 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("standard", "kaggle-malicious-urls"),
         default="standard",
     )
+    predict = subparsers.add_parser(
+        "predict", help="score URLs with a model saved by 'evaluate'"
+    )
+    predict.add_argument(
+        "--model-dir", required=True,
+        help="folder containing model.joblib and metrics.json from 'evaluate'",
+    )
+    predict.add_argument("--url", action="append", required=True, help="URL to score")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "predict":
+        for row in predict_urls(args.model_dir, args.url):
+            print(json.dumps(row, sort_keys=True))
+        return 0
     frame = load_url_csv(args.data, phiusiil_labels=args.phiusiil_labels)
     external = None
     if args.external:

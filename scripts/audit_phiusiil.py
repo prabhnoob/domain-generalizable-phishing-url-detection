@@ -1,5 +1,3 @@
-"""Audit PhiUSIIL and record deterministic domain-split statistics."""
-
 from __future__ import annotations
 
 import argparse

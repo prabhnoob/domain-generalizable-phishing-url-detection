@@ -1,5 +1,3 @@
-"""Dataset loading and label normalization."""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -12,7 +10,6 @@ LABEL_COLUMNS = ("label", "Label", "class", "Class")
 
 
 def _drop_conflicting_labels(frame: pd.DataFrame) -> pd.DataFrame:
-    """Remove every URL that appears with more than one class label."""
     conflicts = frame.groupby("url")["label"].transform("nunique") > 1
     return frame.loc[~conflicts].reset_index(drop=True)
 
@@ -25,11 +22,6 @@ def _find_column(columns: pd.Index, candidates: tuple[str, ...], kind: str) -> s
 
 
 def load_url_csv(path: str | Path, *, phiusiil_labels: bool = False) -> pd.DataFrame:
-    """Load a URL CSV and return canonical ``url`` and ``label`` columns.
-
-    Project labels are always 1 for phishing and 0 for legitimate. Set
-    ``phiusiil_labels`` for the original UCI file, whose labels are reversed.
-    """
     frame = pd.read_csv(path)
     url_col = _find_column(frame.columns, URL_COLUMNS, "URL")
     label_col = _find_column(frame.columns, LABEL_COLUMNS, "label")
@@ -48,11 +40,6 @@ def load_url_csv(path: str | Path, *, phiusiil_labels: bool = False) -> pd.DataF
 
 
 def load_kaggle_malicious_urls(path: str | Path) -> pd.DataFrame:
-    """Load Kaggle ``sid321axn/malicious-urls-dataset`` for binary testing.
-
-    The source has benign, phishing, malware, and defacement classes. This
-    project keeps only benign and phishing so the task matches the proposal.
-    """
     frame = pd.read_csv(path, usecols=["url", "type"])
     frame = frame[frame["type"].isin(["benign", "phishing"])].copy()
     frame["label"] = frame["type"].map({"benign": 0, "phishing": 1}).astype(int)

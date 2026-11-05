@@ -1,5 +1,3 @@
-"""Download the CC0 Kaggle Malicious URLs dataset without storing credentials."""
-
 from __future__ import annotations
 
 import shutil

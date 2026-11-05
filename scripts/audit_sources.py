@@ -1,5 +1,3 @@
-"""Audit source-specific URL formatting, prevalence, and label conflicts."""
-
 from __future__ import annotations
 
 import argparse

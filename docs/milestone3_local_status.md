@@ -1,14 +1,16 @@
-# Milestone 3 Local Status
+# Milestone 3 Status
 
-This file records local, uncommitted work derived from the Nov. 4 prompt pack. It is not a submission document and has not been pushed.
+This file records the state of the Milestone 3 implementation. It is a working note, not a submission document.
 
-## Implemented locally
+## Implemented
 
 - PowerShell and Bash quickstart scripts.
 - Direct package list in `requirements.txt`.
 - Python 3.12 Conda environment file.
 - Central random/NumPy seed function using seed 474.
 - Repeatability test comparing two complete `metrics.json` files.
+- `predict` command that scores new URLs with a saved model and its validation threshold.
+- 48-URL synthetic sample used by the quickstart (reserved `.example`, `.test`, `.invalid` names and documentation IPs).
 - README sections required by the milestone manual.
 - Source audit for class prevalence, scheme-less URLs, label conflicts, and timestamp columns.
 
@@ -33,7 +35,7 @@ This file records local, uncommitted work derived from the Nov. 4 prompt pack. I
 - C9 PR-AUC, several seeds, confidence intervals: planned.
 - C10 data hygiene: audit completed; conflicting-label removal and private-suffix policy planned.
 
-## Confirmed by the local source audit
+## Confirmed by the source audit
 
 - PhiUSIIL has no scheme-less URLs after URL/label deduplication.
 - After dropping six conflicting-label URLs, the Kaggle binary subset has 461,935 scheme-less rows out of 522,160 (88.47%).
@@ -42,7 +44,7 @@ This file records local, uncommitted work derived from the Nov. 4 prompt pack. I
 - Six exact Kaggle URLs occur with conflicting labels in the raw file; the loader now removes all rows for those URLs.
 - Neither source exposes a timestamp column.
 
-## Decisions made locally for team review
+## Team decisions
 
 - MIT software license.
 - Rename `data/processed` to `data/preprocessed`.

@@ -1,5 +1,3 @@
-"""Security-relevant evaluation metrics."""
-
 from __future__ import annotations
 
 import numpy as np
@@ -10,7 +8,6 @@ from sklearn.metrics import (
 
 
 def threshold_at_target_fpr(y_true, y_probability, target_fpr: float) -> float:
-    """Choose the highest-recall threshold whose validation FPR is acceptable."""
     if not 0 < target_fpr < 1:
         raise ValueError("target_fpr must be between 0 and 1")
     y_true = np.asarray(y_true)
@@ -26,7 +23,6 @@ def threshold_at_target_fpr(y_true, y_probability, target_fpr: float) -> float:
 
 
 def classification_metrics(y_true, y_pred, y_probability) -> dict[str, float | None]:
-    """Return the metrics promised in the proposal."""
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
     y_probability = np.asarray(y_probability)

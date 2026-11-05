@@ -1,5 +1,3 @@
-"""Download the official UCI PhiUSIIL CSV into data/raw."""
-
 from __future__ import annotations
 
 import shutil

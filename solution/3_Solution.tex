@@ -1,0 +1,144 @@
+\documentclass[sigconf,nonacm]{acmart}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\settopmatter{printacmref=false,printfolios=false}
+\pagestyle{plain}\fancyhead{}\fancyfoot{}
+\setcopyright{none}
+\acmDOI{}
+\setlength{\bibsep}{1pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\begin{document}
+\title{Phishing URL Detection on Unseen Websites: Proposed Method}
+\author{Prabhnoor Singh}\affiliation{\institution{University of Victoria}\city{Victoria}\country{Canada}}\email{prabhnoorsingh@uvic.ca}
+\author{Divraj Singh}\affiliation{\institution{University of Victoria}\city{Victoria}\country{Canada}}\email{divrajsingh@uvic.ca}
+\author{Dilraj Gulati}\affiliation{\institution{University of Victoria}\city{Victoria}\country{Canada}}\email{dilrajsinghgulati@uvic.ca}
+\begin{abstract}
+Phishing URL detectors often report near-perfect scores, but many are tested on websites they already saw in training. Our method fixes this: it keeps each website (its site name, or registrable domain) on only one side of the split, and it also tests on a second dataset after removing every website seen in training. We use two simple models that read only the URL, and we pick each model's alarm level using training data only. Code and a one-command quick start: \url{https://github.com/prabhnoob/domain-generalizable-phishing-url-detection}.
+\end{abstract}
+\keywords{Phishing detection, URL classification, data leakage, evaluation}
+\maketitle
+
+\section{Introduction}
+In our literature review, we found that most phishing URL detectors are tested on random splits, so URLs from the same website can end up in both training and testing. Even when each host is kept on one side, 1,387 site names still appeared on both sides~\cite{ahamed}, and detectors do worse on new datasets~\cite{rashid}. Our method closes this gap. Instead of building a new detector, we test two common URL-only models in four ways, from easiest to hardest: random, host, site name, and new dataset.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[font=\scriptsize,
+  box/.style={draw, rounded corners=2pt, align=center, text width=19mm, minimum height=8mm, inner sep=1.5pt, fill=gray!8},
+  key/.style={box, fill=green!18},
+  arr/.style={-{Stealth[length=1.6mm]}, thick}]
+\node[box] (d) at (0,0) {PhiUSIIL $D$\\train source};
+\node[box] (c) at (2.35,0) {\textsc{Clean}: dedupe,\\drop conflicts, labels};
+\node[key] (k) at (4.7,0) {group key $r(u)$\\site name (eTLD+1)};
+\node[key] (s) at (7.05,0) {\textsc{Split} by $s$:\\no group on both sides};
+\node[box] (tr) at (9.4,0) {$D_{tr}$ (80\%)};
+\node[box] (th) at (11.75,0) {inner split $T/V$,\\pick $\tau$: FPR$_V\le1\%$};
+\node[box] (fit) at (11.75,-0.95) {fit $f$ on $D_{tr}$:\\$\phi_{lex}$ or $\phi_{char}$ + LR};
+\node[box] (dp) at (0,-1.9) {Kaggle $D'$\\new source};
+\node[box] (c2) at (2.35,-1.9) {\textsc{Clean}};
+\node[key] (fl) at (4.7,-1.9) {cross only: drop\\sites with $r(u)\in r(D)$};
+\node[box] (te) at (9.4,-1.9) {$D_{te}$ (20\% of $D$,\\or filtered $D'$)};
+\node[box] (ap) at (11.75,-1.9) {$p_u=f(u)$};
+\node[box] (out) at (14.6,-0.95) {$\hat{y}_u=\mathbf{1}[p_u\ge\tau]$\\scores $M$};
+\draw[arr] (d) -- (c); \draw[arr] (c) -- (k); \draw[arr] (k) -- (s); \draw[arr] (s) -- (tr);
+\draw[arr] (tr) -- (th); \draw[arr] (tr.south east) -- (fit.west);
+\draw[arr] (s.south) -- (te.north west);
+\draw[arr] (dp) -- (c2); \draw[arr] (c2) -- (fl); \draw[arr] (fl) -- (te);
+\draw[arr] (te) -- (ap); \draw[arr] (fit) -- (ap);
+\draw[arr] (th.east) -- (out.north west); \draw[arr] (ap.east) -- (out.south west);
+\end{tikzpicture}
+\caption{Proposed method (Algorithm~\ref{alg}). Green steps are our contribution: each site name stays on one side of every split, and the new source is filtered against training sites.}
+\label{fig:pipeline}
+\end{figure*}
+
+\section{Formal Definition}
+\subsection{Input and Output}
+In short, the method takes labeled URLs and settings, and returns a trained model, an alarm level, and test scores. Let $\mathcal{U}$ be the set of all URL strings. The input is a labeled source dataset $D=\{(u_i,y_i)\}_{i=1}^{n}$ with $u_i\in\mathcal{U}$ and $y_i\in\{0,1\}$ (1 = phishing, 0 = safe); an optional second-source dataset $D'$ in the same form; a split type $s\in S=\{\text{random},\text{host},\text{domain},\text{cross}\}$; a model type $m\in\{\text{lex},\text{char}\}$; a random seed $\sigma$; and a target false-positive rate $\alpha$. Our method is a function
+\[
+\Pi(D,D',s,m,\sigma,\alpha)=(f,\tau,M),
+\]
+where $f:\mathcal{U}\rightarrow[0,1]$ gives a phishing probability, $\tau\in[0,1]$ is a decision threshold, the final label is $\hat{y}(u)=\mathbf{1}[f(u)\ge\tau]$, and $M$ is the list of test scores (precision, recall, F1, MCC, false-positive rate, ROC-AUC, PR-AUC). Running $\Pi$ again with the same inputs and seed $\sigma$ must give the same $(f,\tau,M)$.
+
+\subsection{Algorithm}
+\textbf{Cleaning.} We trim spaces, remove repeated rows, and remove any URL that has both labels. PhiUSIIL uses 1 for safe~\cite{phius}, so we flip its labels ($y\leftarrow1-y$). From Kaggle~\cite{kaggle}, we keep only the safe and phishing rows. This leaves 235,370 PhiUSIIL URLs (57.3\% safe, 42.7\% phishing) and 522,160 Kaggle URLs (82.0\% safe, 18.0\% phishing). An optional step (off by default) also removes \texttt{http://}, \texttt{www.}, and end slashes.
+
+\textbf{Site names.} Let $h(u)$ be the host of $u$ in lowercase, and $r(u)$ its site name (registrable domain, or eTLD+1), found with the Public Suffix List~\cite{psl}; for an IP address, $r(u)=h(u)$. For example, the host \texttt{paypal.login-fraud.top} has site name \texttt{login-fraud.top}. We group by $r$, not $h$, because hosts of one site (such as \texttt{mail.} and \texttt{login.}) look very alike.
+
+\textbf{Splits.} For the host split we group by $g_s=h$; for the site-name split, by $g_s=r$. We split $D$ into training $D_{tr}$ (80\%) and testing $D_{te}$ (20\%) so that no group is on both sides:
+\[
+\{g_s(u):(u,y)\in D_{tr}\}\cap\{g_s(u):(u,y)\in D_{te}\}=\emptyset.
+\]
+The code checks this rule and stops if it is broken. The random split only keeps the same share of phishing on both sides. For the new-dataset (cross) split, we train on all of $D$ and test on
+$D_{te}=\{(u,y)\in D' : h(u)\neq\emptyset,\ r(u)\notin r(D)\}$, so no test website was seen in training.
+
+\textbf{Features.} Model 1 (lexical) turns each URL into 16 numbers $\phi_{lex}(u)\in\mathbb{R}^{16}$, in order: the lengths of the URL, host, path, and query; the number of digits; the counts of \texttt{.}\,\texttt{-}\,\texttt{@}\,\texttt{\%}\,\texttt{=}\,\texttt{/}; the number of words; how many of them are in a list of 10 suspicious words (e.g., \emph{login}, \emph{verify}); whether the host is an IP address; whether it uses HTTPS; and how random the letters look (entropy, $H(u)=-\sum_c p_c\log_2 p_c$). Each number is rescaled to mean 0 and spread 1, using training data only. This follows hand-made URL features~\cite{sahingoz}. Model 2 (character) instead splits the URL into all 3- to 5-letter pieces and weights each piece by TF-IDF (top 50,000 pieces), giving $\phi_{char}(u)$. It is a light version of models that read URLs letter by letter~\cite{bahnsen}.
+
+\textbf{Model.} Both models use logistic regression, which turns the numbers into a phishing probability: $f(u)=\mathrm{sigmoid}(\mathbf{w}^{\top}\phi(u)+b)$. We train it in scikit-learn~\cite{sklearn} (liblinear, L2 penalty $C=1$, up to 1,000 steps). Classes are uneven, so each gets weight $n/(2n_c)$. It is fast and easy to explain, so score changes come from how we test, not from the model.
+
+\textbf{Alarm level (threshold).} We must never tune on the test set~\cite{arp}. So we split the training data again (80/20, same split type; site name for cross) into $T$ and $V$, train $f_V$ on $T$, and pick the level that catches the most phishing while keeping false alarms at most 1\%:
+\[
+\tau=\arg\max_{t}\ \mathrm{TPR}_V(t)\quad\text{s.t.}\quad \mathrm{FPR}_V(t)\le\alpha,\qquad \alpha=0.01.
+\]
+The 1\% is our own target, not a fixed rule. We then retrain $f$ on all of $D_{tr}$ and test it on $D_{te}$. One limitation: $\tau$ comes from $f_V$, not the retrained $f$. We also report macro-F1 and Brier score, and seed $\sigma=474$ fixes every random step.
+
+\begin{algorithm}[t]
+\caption{Evaluation method $\Pi$}\label{alg}
+\begin{algorithmic}[1]
+\State set seeds to $\sigma$; $D\gets$ \textsc{Clean}$(D)$; $D'\gets$ \textsc{Clean}$(D')$
+\If{$s=\text{cross}$}
+  \State $D_{tr}\gets D$; $D_{te}\gets\{(u,y)\in D' : r(u)\notin r(D)\}$
+\Else
+  \State $(D_{tr},D_{te})\gets$ \textsc{GroupSplit}$(D,g_s,0.2,\sigma)$
+  \State \textbf{assert} no group of $D_{tr}$ is in $D_{te}$
+\EndIf
+\State $s_V\gets$ domain \textbf{if} $s=\text{cross}$ \textbf{else} $s$
+\State $(T,V)\gets$ \textsc{GroupSplit}$(D_{tr},g_{s_V},0.2,\sigma)$
+\State $f_V\gets$ \textsc{Fit}$(m,T)$; $\tau\gets$ \textsc{Threshold}$(f_V,V,\alpha)$
+\State $f\gets$ \textsc{Fit}$(m,D_{tr})$ \Comment{features + logistic regression}
+\State $p_u\gets f(u)$, $\hat{y}_u\gets\mathbf{1}[p_u\ge\tau]$ for each $(u,y)\in D_{te}$
+\State $M\gets$ \textsc{Scores}$(\{y\},\{\hat{y}_u\},\{p_u\})$; \Return $(f,\tau,M)$
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{Running Example}
+Take the phishing URL $u=$\,\url{https://paypal.login-fraud.top/verify} ($y=1$). Its site name is $r(u)=$\,\texttt{login-fraud.top}, so all URLs of that site go to one side only. Model 1 sees lengths 37 (URL), 22 (host), and 7 (path), 2 dots, 1 hyphen, 3 slashes, 2 suspicious words (\emph{login}, \emph{verify}), HTTPS = 1, and entropy 4.23. On our 48-URL sample (site-name split, $\sigma=474$), Model 2 gives $f(u)=0.584$, which is above $\tau=0.534$, so it says phishing ($\hat{y}(u)=1$). The quick start prints these same numbers.
+
+\section{Implementation}
+Table~\ref{tab:code} shows which Python 3.12 file does each step. Following the FAIR principles, the code is easy to \emph{find} and \emph{access} on GitHub, works with other tools through CSV input and JSON output, and is \emph{reusable} thanks to the README, MIT licence, fixed package versions in \texttt{requirements.txt}, and the course folder layout. Datasets are downloaded by scripts.
+
+\begin{table}[t]
+\caption{Which code file does each step of Algorithm~\ref{alg}.}\label{tab:code}
+\vspace{-8pt}
+\scriptsize\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Step & Module & What it does\\
+\midrule
+Seed $\sigma$ & \texttt{reproducibility.py} & seeds Python and NumPy\\
+\textsc{Clean} & \texttt{data.py} & load, remove repeats and conflicts\\
+$h(u)$, $r(u)$ & \texttt{domains.py} & host and site name\\
+\textsc{GroupSplit} & \texttt{splits.py} & 4 splits + overlap check\\
+$\phi$, \textsc{Fit} & \texttt{features.py}, \texttt{models.py} & $\phi_{lex}$, $\phi_{char}$ + log. regression\\
+\textsc{Threshold}, $M$ & \texttt{metrics.py} & alarm level $\tau$, all scores\\
+$\Pi$ & \texttt{experiment.py} & runs all steps, saves results\\
+Driver & \texttt{cli.py} & \texttt{evaluate} and \texttt{predict}\\
+Tests & \texttt{tests/} & 19 tests, incl. same-seed check\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Quick start.} After \texttt{git clone}, one script (\texttt{quickstart.sh}, or \texttt{.ps1} on Windows) installs the packages, runs all 19 tests, trains both models on the sample, and prints the running example. Two runs give the same files; a test checks this. Full PhiUSIIL and Kaggle runs use the \texttt{evaluate} command (see README); their results are part of Milestone 4.
+
+\smallskip\noindent\textbf{AI use (level D).} OpenAI Codex~\cite{codex} helped write parts of the code, and Claude~\cite{claude} helped draft the pseudo-code, figure, and text. We checked every step against the code, ran the tests and quick start twice, and checked each reference. This found AI mistakes we fixed: a draft mixed up the model's output with the true label, overstated the seed function, and used a sample too small to score.
+
+\smallskip\noindent\textbf{Team contributions.} \emph{Prabhnoor}: splits, cross-source filter, repository. \emph{Divraj}: features, models, threshold. \emph{Dilraj}: formal definition, pseudo-code, figure, quick start. \emph{All}: tests, writing.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+\end{document}

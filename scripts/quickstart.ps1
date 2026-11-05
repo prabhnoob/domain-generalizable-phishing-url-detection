@@ -11,12 +11,21 @@ if (-not (Test-Path -LiteralPath $python)) {
 & $python -m pip install -r (Join-Path $repoRoot 'requirements.txt')
 & $python -m pip install -e $repoRoot
 & $python -m pytest (Join-Path $repoRoot 'tests')
-& $python -m phishing_url_detection evaluate `
-    --data (Join-Path $repoRoot 'data\sample\urls.csv') `
-    --model lexical `
-    --split random `
-    --test-size 0.25 `
-    --seed 474 `
-    --output (Join-Path $repoRoot 'output\quickstart')
 
-Get-Content -Raw (Join-Path $repoRoot 'output\quickstart\metrics.json')
+foreach ($model in @('lexical', 'char')) {
+    $output = Join-Path $repoRoot "output\quickstart\$model"
+    & $python -m phishing_url_detection evaluate `
+        --data (Join-Path $repoRoot 'data\sample\urls.csv') `
+        --model $model `
+        --split domain `
+        --test-size 0.25 `
+        --seed 474 `
+        --output $output | Out-Null
+    Write-Output "== ${model}: output\quickstart\$model\metrics.json"
+    Get-Content -Raw (Join-Path $output 'metrics.json')
+}
+
+Write-Output '== Running example from the report (character model)'
+& $python -m phishing_url_detection predict `
+    --model-dir (Join-Path $repoRoot 'output\quickstart\char') `
+    --url 'https://paypal.login-fraud.top/verify'

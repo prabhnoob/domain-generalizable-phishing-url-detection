@@ -1,6 +1,6 @@
 # Milestone 3 Implementation Decisions
 
-These decisions are local and uncommitted pending team review.
+Team decisions made for Milestone 3.
 
 ## 1. Software license
 

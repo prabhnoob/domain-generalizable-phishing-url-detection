@@ -1,5 +1,3 @@
-"""Deterministic evaluation splits with explicit leakage checks."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -38,7 +36,6 @@ def make_split(
     test_size: float = 0.2,
     seed: int = 474,
 ) -> DatasetSplit:
-    """Create one of the proposal's within-source evaluation splits."""
     if not 0 < test_size < 1:
         raise ValueError("test_size must be between 0 and 1")
     grouped = with_groups(frame)
@@ -76,7 +73,6 @@ def make_split(
 
 
 def assert_no_group_leakage(split: DatasetSplit) -> None:
-    """Raise if a grouped split shares a host/domain across train and test."""
     if split.group_column is None:
         return
     train_groups = set(split.train[split.group_column])

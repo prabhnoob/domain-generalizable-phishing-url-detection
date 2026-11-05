@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from phishing_url_detection.experiment import run_experiment
+from phishing_url_detection.experiment import predict_urls, run_experiment
 
 
 def _dataset() -> pd.DataFrame:
@@ -61,3 +61,19 @@ def test_same_seed_produces_identical_metrics(tmp_path: Path):
     first = json.loads((first_dir / "metrics.json").read_text(encoding="utf-8"))
     second = json.loads((second_dir / "metrics.json").read_text(encoding="utf-8"))
     assert first == second
+
+
+def test_predict_reuses_saved_model_and_threshold(tmp_path: Path):
+    result = run_experiment(
+        _dataset(), model_name="char", split_method="domain",
+        output_dir=tmp_path, test_size=0.25, seed=474,
+    )
+    url = "https://paypal.login-fraud.top/verify"
+    first = predict_urls(tmp_path, [url])
+    second = predict_urls(tmp_path, [url])
+    assert first == second
+    assert first[0]["registrable_domain"] == "login-fraud.top"
+    assert first[0]["decision_threshold"] == result["decision_threshold"]
+    assert first[0]["prediction"] == int(
+        first[0]["phishing_probability"] >= result["decision_threshold"]
+    )
