@@ -24,16 +24,16 @@ This file records the state of the Milestone 3 implementation. It is a working n
 
 ## Improvement status
 
-- C1 canonicalization: audit completed; model change and ablation planned.
-- C2 source-fingerprint classifier: planned.
-- C3 host-only versus full-URL features: planned.
+- C1 canonicalization: done (`--canonicalize`); test runs in Milestone 4.
+- C2 source-fingerprint check: moved to Milestone 4.
+- C3 host-only versus full-URL features: done (`--feature-view host`); test runs in Milestone 4.
 - C4 brand/subdomain/TLD features: planned; requires a cited brand list.
 - C5 additional model families: planned; team must choose scope.
-- C6 grouped hyperparameter selection: planned.
+- C6 grouped validation: done for the threshold; hyperparameter tuning planned.
 - C7 multi-source training: planned after C1–C6.
-- C8 calibration and operating point: planned; target false-positive rate needs team choice.
-- C9 PR-AUC, several seeds, confidence intervals: planned.
-- C10 data hygiene: audit completed; conflicting-label removal and private-suffix policy planned.
+- C8 operating point: done (1% false-positive rate, chosen on validation data); calibration planned.
+- C9 PR-AUC: done; several seeds and confidence intervals planned.
+- C10 data cleaning: done (URLs with both labels are removed; all `*.github.io` pages count as one site).
 
 ## Confirmed by the source audit
 
@@ -49,8 +49,8 @@ This file records the state of the Milestone 3 implementation. It is a working n
 - MIT software license.
 - Rename `data/processed` to `data/preprocessed`.
 - Keep the lexical LR and character TF-IDF LR promised in the literature review; defer additional model families.
-- Use a 1% false-positive-rate target chosen on domain-disjoint validation data.
-- Approve C1, C2, C3, C6, C8, C9, and C10; defer the expansion items C4, C5 (extra models), and C7.
+- Use a 1% false-positive-rate target chosen on validation data only.
+- Approve C1, C3, C6, C8, C9, and C10; move C2 to Milestone 4; defer C4, C5 (extra models), and C7.
 
 ## Team decision still required
 

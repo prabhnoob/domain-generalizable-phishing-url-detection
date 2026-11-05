@@ -21,7 +21,7 @@ Random forest, XGBoost, and a character CNN are deferred. Adding them now would 
 
 ## 4. Operating point
 
-Use a target false-positive rate of 1%. Select the probability threshold using a validation subset of the training source only. Never choose or tune the threshold on the final within-source or cross-source test set. Continue reporting threshold-free ROC-AUC and PR-AUC alongside threshold-dependent metrics.
+Use a target false-positive rate of 1%. Select the probability threshold using a validation subset of the training source only. The validation split uses the same split type as the test (domain for cross-source). Never choose or tune the threshold on the final within-source or cross-source test set. Continue reporting threshold-free ROC-AUC and PR-AUC alongside threshold-dependent metrics.
 
 The 1% value is a team design target, not a claim that every deployment requires the same rate. It must be stated as such in the report.
 
@@ -30,11 +30,11 @@ The 1% value is a team design target, not a claim that every deployment requires
 | Item | Decision | Milestone 3 scope |
 |---|---|---|
 | C1 | Approved | Add optional canonicalization and compare it as an ablation. |
-| C2 | Approved | Audit how well lexical features distinguish PhiUSIIL from Kaggle. |
+| C2 | Moved to Milestone 4 | Audit how well lexical features distinguish PhiUSIIL from Kaggle. |
 | C3 | Approved | Compare full-URL and host-only lexical views. |
 | C4 | Deferred | Requires a defensible external brand list and changes the feature definition. |
 | C5 | Partially approved | Complete the two promised LR baselines; defer RF, XGBoost, and CNN. |
-| C6 | Approved | Use domain-grouped validation for threshold and later hyperparameter selection. |
+| C6 | Approved | Use grouped validation (same split type as the test) for the threshold and later hyperparameter selection. |
 | C7 | Deferred | Multi-source training changes the present train-on-PhiUSIIL evaluation design. |
 | C8 | Approved | Select a 1% FPR threshold on validation data; calibration remains planned. |
 | C9 | Approved | Add PR-AUC now; multi-seed runs and domain bootstrap remain planned. |
