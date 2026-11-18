@@ -1,0 +1,216 @@
+                   Benchmarking Community Detection Methods for
+                    Diachronically Like-minded User Communities∗
+                                     Reia Drucker                                                Ali Mortazavi
+                              University of Victoria                                          University of Victoria
+                              reiadrucker@uvic.ca                                              alimorty@uvic.ca
+
+                        Luiz Franciscatto Guerra                                                 Hossein Fani
+                              University of Victoria                                          University of Victoria
+                               luizguerra@uvic.ca                                                hfani@uvic.ca
+ABSTRACT                                                                   Table 1: Statistics of the raw and preprocessed datasets.
+This is a sample evaluation report for your proposal. The sec-                                    dblp           uspt           imdb             gith
+                                                                       teams T                publications     patents         movies      software repos
+tions and subsections are by no means fixed and should be indeed       experts E                 authors      inventors     cast & crew      developers
+changed or customized according to the proposal. The codebase,         skills S                keywords       subclasses    (sub) genres     prog. lang.
+                                                                       success                 published        issued        produced         released
+along with the installation and execution instructions as well as      statistics             raw     prep. raw      prep. raw      prep. raw        prep.
+software artifacts, can be obtained under cc-by-nc-sa-4.0 license at   |T |                   4.9M     99K 7.1M      152K 507K       32K 133K         46K
+                                                                       |E |                   5.0M     14K 3.5M       13K 877K      2.0K 453K         1.2K
+https://github.com/**.                                                 |S |                   90K      30K 242K       67K 28          23   20          20
+                                                                       #teams w/ one expert   769K       0 2.6M        0 323K         0    0            0
+                                                                       avg. #experts/team     3.06     3.29 2.51      3.79 1.88      3.98 5.52        7.53
+KEYWORDS                                                               avg. #skills/team      8.57     9.71 6.29      9.97 1.54      1.76 1.37        1.57
+More Specific Keywords, Specific Keyword, General Keyword, More
+General Keyword                                                        3     DATASET
+                                                                       In our experiments, we use a publicly available Twitter dataset col-
+                                                                       lected and published1 by Abel et al. [? ]. It consists of approximately
+1    INTRODUCTION                                                      3M tweets posted by 135,731 unique users between November 1 and
+                                                                       December 31, 2010. In addition to its text, each tweet includes user
+This section describes the experiments performed to validate our
+                                                                       id and timestamp. The whole two months time period is sampled
+proposed work in comparison with two baselines in the context of
+                                                                       on a daily basis, i.e., L = 61 days.
+news recommendation, user prediction, and community selection
+applications on a Twitter dataset.
+                                                                       4     SETUP
+                                                                       Our proposed approach consists of three phases to identify tempo-
+2    RESEARCH QUESTIONS                                                rally like-minded user communities; finding topics, building user
+We seek to answer the following research questions:                    vector representations, and detecting user communities. Here, we
+RQ1. Does the seq-to-seq approach yield performance improve-           provide the implementation details and the setup of our approach
+ments over existing multilabel neural team recommenders? In re-        in each of these phases.
+sponse, we benchmark seq-to-seq-based models (seq-*) against
+existing team recommenders fnn [? ], bnn [? ] and bnn_emb [? ].        4.0.1 Finding topics. Extracting topics from tweets suffers from the
+RQ2. Which seq-to-seq model performs the best (worst) for team         sparsity problem when topic modeling methods such as LDA are
+recommendation? In response, we compare a variety of architec-         used [? ]. As suggested in [? ? ], we annotate each tweet with entities
+tures, including recurrent recommender networks [? ], convolu-         defined in Wikipedia to obtain better topics from Twitter with no
+tional seq2seq (seq-convs2s) [? ], recurrent models with attention     change in the underlying topic detection methods. For instance, for
+(seq-rnn-attn) [? ], and the transformer [? ].                         a tweet such as ‘NATO Leaders Seek Time on Afghan Exit Strategy -
+RQ3. How well does the seq-to-seq approach generalize across           http://nyti.ms/cMMDuR’, a semantic annotator such as TagMe [? ]
+different domains in team recommendation? In response, we per-         is able to identify and extract several Wikipedia entities, namely
+formed our experiment on four benchmark datasets in team rec-          ‘NATO’2 , ‘Afghan’, and ‘Exit_Strategy’. Using entities instead of
+ommendation literature, including dblp, consisting of computer         words can lead to the reduction of noisy content within the topic
+science publications and uspt collection of issued patents following   detection process, because each concept implicitly represents a
+long-tailed distribution of skills over teams, on the one hand, and    collection of typical terms which are collectively more meaningful
+imdb consisting of movies and gith collection of open-source soft-     than a single word or a group of less coherent words [? ]. We
+ware repos, where skills were distributed uniformly among teams,       annotated the text of each tweet with Wikipedia entities using the
+on the other hand.                                                     TAGME RESTful API3 , which resulted in 350,731 unique entities.
+
+                                                                       1 www.wis.ewi.tudelft.nl/umap2011/
+                                                                       2 en.wikipedia.org/wiki/NATO
+∗ Link to Github or an online repo                                     3 services.d4science.org/web/tagme/documentation
+ 0.6                         0.25                          1
+        Precision × 10-2               Recall                   F-Measure × 10-2
+ 0.5                          0.2                         0.8
+ 0.4
+                             0.15                         0.6
+ 0.3
+                              0.1                         0.4
+ 0.2
+ 0.1                         0.05                         0.2
+
+    0                              0                        0
+        Fani et al.
+
+
+
+
+                                                                Fani et al.
+              d=100
+              d=200
+              d=300
+              d=400
+              d=500
+               C=30
+               C=05
+               C=10
+               C=15
+               C=20
+               C=25
+
+
+
+
+                                       Fani et al.
+
+
+
+
+                                                                      d=100
+                                                                      d=200
+                                                                      d=300
+                                                                      d=400
+                                                                      d=500
+                                                                       C=30
+                                                                       C=05
+                                                                       C=10
+                                                                       C=15
+                                                                       C=20
+                                                                       C=25
+                                             d=100
+                                             d=200
+                                             d=300
+                                             d=400
+                                             d=500
+                                              C=30
+                                              C=05
+                                              C=10
+                                              C=15
+                                              C=20
+                                              C=25
+        Hu et al.   Ours               Hu et al.   Ours         Hu et al.   Ours
+
+
+
+Figure 1: Comparative performance on the user prediction
+application.
+                                                                                       Figure 2: Performance on community selection application.
+
+   In order to find topics of interest in our dataset, we have applied
+MALLET4 for LDA. LDA-based approaches to topic detection need a                        only consider the community with the highest probability as each
+priori knowledge for the number of topics. The number of topics has                    user’s community.
+been already investigated and set to 50 for the same tweet dataset                        Figure ?? provides an overview of the distribution of users across
+by other researchers in [? ]. We populate the points of temporal                       different communities. For Hu et al.’s work, the number of commu-
+interest (PoTI) for our topic set Z on a daily basis, i.e., L = 61 days,               nities needs to be specified as shown ranging from 5 to 30. For our
+and screen out values less than 0.1. The condition for homogeneity                     proposed approach, the number of communities is automatically
+𝑐 is set such that the difference of values falls in the range [0, 0.1).               determined by the graph partitioning method; however, the size of
+                                                                                       the embeddings needs to be provided, which has been set from 100
+4.0.2 Building user vector representation. We extended CBOW ar-                        to 500. As seen in the figure, our proposed method leads to a more
+chitecture in Gensim5 to learn user embeddings as already intro-                       fair distribution of users across communities while the two baseline
+duced in this paper. The training phase uses a learning rate of 0.025                  methods have a higher skewness in the distribution of users in
+and in each epoch we decrease it by 0.002 for 200 epochs. We per-                      their identified communities. While this by itself is not a measure
+form the experiments on different vector sizes of 𝑑 = 100, 200, ..., 500               of community quality, as we will show later, disproportionate dis-
+in an increasing order till we see no further performance gain.                        tribution of users in communities could lead to poor application
+4.0.3 Detecting user communities. We build temporal topic-based                        level performance.
+communities according to our proposed approach in Section ??. We
+build the weighted graph G and apply the Louvain method with                           6   EVALUATION PROTOCOL AND GOLD
+resolution parameter 0.1 using Pajek6 . This leads to our temporal                         STANDARD
+topic-based communities P∗ .                                                           On the one hand, contrary to typically small scale networks or
+                                                                                       synthetic ones, gold standard communities for real social networks
+5       BASELINES                                                                      are not available. So, well-defined quality measures such as Rand
+We compare our work against the following baselines whose details                      index, Jaccard index, or normalized mutual information (NMI) that
+has been already given in the related work section:                                    require comparison to a gold standard are not applicable. On the
+   Fani et al. [? ]. This approach models user’s contributions to-                     other hand and in the absence of a golden standard, quality func-
+ward the topics of interest through a multivariate time series. We                     tions such as modularity are not helpful either since they are based
+use LDA in its topic detection step with 50 topics and build the time                  on the explicit links between users, which are not applicable to our
+series for daily time intervals L= 61 days in its user modeling step.                  work. For instance, in the context of our work and the baselines,
+The approach uses two dimensional cross correlation to measure the                     a perfect community detection algorithm might have a low mod-
+similarity of a pair of users’ time series. We use the implementation                  ularity value as those users that are deemed most similar might
+in MATLAB7 for calculating time series cross-correlation. Finally,                     not have explicit social connection with each other. Therefore in
+we use the Louvain method in Pajek for its community detection                         our work, the communities that achieve high modularity are not
+step as proposed by the authors. Hu et al. [? ] . This is a parametric                 necessarily optimal from temporal and topical points of view [? ].
+unified probabilistic generative model for topics and communities.                        Fortunately, the performance of community detection methods
+The number of topics is set to 50 and we perform experiments on                        can be measured through observations made at the application
+increasing number of communities for 𝐶 = 5, 10, ..., 30 till we see                    level, as suggested in [? ? ]. In these evaluation strategies, a tem-
+no performance gain. The number of iterations is set to 1,000. This                    poral like-minded user community detection method is considered
+method is a mixture model in which all users are members of all                        better iff its output communities improve an underlying applica-
+communities with a probability distribution. In our comparison, we                     tion. We deploy three applications: news recommendation, user
+                                                                                       prediction, and community selection. Note should be taken that
+4 mallet.cs.umass.edu/topics.php
+5 radimrehurek.com/gensim/models/word2vec.html
+                                                                                       we do not attempt to improve the state of the art in any of these
+6 vlado.fmf.uni-lj.si/pub/networks/pajek/                                              three applications but rather to show that the application of the
+7 www.mathworks.com/help/signal/ref/xcorr2.html                                        proposed community detection method is able to provide a stronger
+                                                                                   2
+performance compared to the other two state of the art community
+detection baselines.
+    To this end, we first build a gold standard dataset for the said
+applications by collecting news articles to which a user has explic-
+itly linked in her tweets (or retweets). We postulate that users post
+news article urls since they are interested in the topics of those
+news articles. Similar to tweets, we annotate news articles with
+Wikipedia entities. We build the gold standard from a set of news
+articles whose urls have been posted by user 𝑢 at time 𝑡. We see each
+entry as a triple (𝑢, 𝑎, 𝑡) consisting of the news article 𝑎, user 𝑢, and
+the time 𝑡. As a result, G = {(𝑢, 𝑎, 𝑡) : 𝑢 ∈ U, 𝑎 ∈ A, 1 ≤ 𝑡 ≤ 𝐿 = 61}
+forms our gold standard where U and A are sets of users and news
+articles. The gold standard G consists of 25,756 triples extracted
+from 3,468 distinct news articles posted by 1,922 users.
+
+6.1    User Prediction
+Another application with which we evaluate our approach and the
+baselines is the user prediction application. Given the gold standard
+G and the like-minded user communities P∗ , this time the goal is
+to predict which users posted the news article 𝑎 at time 𝑡. To do so,
+we find the closest community to the news article in terms of topics
+of interest at time 𝑡. Then, the members of such community would
+constitute our prediction list. We employ precision, recall, and f-
+measure to report user prediction performance. We summarize
+the results for these metrics in Figure 1. As shown, in terms of
+precision, our approach with all different dimensions except 𝑑 =
+100 outperforms all other baselines. In terms of recall, however,
+Hu et al. [? ] with 𝐶 = 5 competes with our proposed approach
+when 𝑑 = 400. The reason for such high recall in Hu et al. with
+C=5 can be attributed to the lower number of communities in this
+method. The fewer the number of communities are, the higher the
+recall of the method would be. In other words, if we only have
+one community that includes all users, recall would be 1.0. As the
+number of communities increases from 𝐶 = 10 to 𝐶 = 30 in Hu
+et al, recall decreases which supports our explanation. Overall, F-
+measure shows the superiority of approach in user prediction in all
+its variants except for 𝑑 = 100, which is weaker than Fani et al.
+
+
+
+
+                                                                            3
+

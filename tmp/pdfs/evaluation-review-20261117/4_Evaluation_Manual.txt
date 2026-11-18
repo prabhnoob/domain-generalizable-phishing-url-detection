@@ -1,0 +1,528 @@
+1
+
+
+
+
+                                   Faculty of Engineering and Computer Science                 CSC503 × SENG474: Data Mining
+                                         Department of Computer Science                                  Fall 2026
+
+     #         Milestone                     Generative AI Guidelines                 Due         Mark Release
+     4         Evaluation            D: AI Task Completion, Human Evaluation1 Nov. 18, Wed., AoE2 Nov. 23, Mon.
+
+    This course is project driven. Students will work in teams to define, develop, and complete a project in the field
+    of data mining/machine learning over the course of one semester. Each team will consist of undergraduate
+    students and one graduate student, who serves as the project lead, coordinating the project and guide the team
+    through the research and development process. The course project has two main objectives:
+
+         -   Hands-on experience: Gain practical experience in applying data mining and machine learning methods
+             to a real-world problem, while developing skills in project planning, implementation, evaluation, and
+             teamwork.
+         -   Research experience: Develop an understanding of the research process, from identifying a problem
+             and reviewing existing approaches to designing, implementing, and evaluating a solution.
+
+    Projects should aim to advance the state of the art, rather than simply reproduce an existing solution. This
+    provides students with an opportunity to conduct meaningful research while completing the course requirements.
+
+    A research project typically starts with a problem and proposes a solution by designing, implementing, and
+    evaluating an algorithm or computational approach. In this sense, it may resemble a software project; however,
+    there are important differences. A software project may primarily focus on implementing or integrating existing
+    algorithms to build a functional system. In contrast, a research project should aim to investigate a problem,
+    identify a limitation or gap in existing approaches, and propose a solution that addresses that gap. The proposed
+    solution may involve (1) a new algorithm, (2) a modification or extension of an existing algorithm, (3) a new
+    combination/pipeline of existing techniques, or (4) a novel application of existing methods to a problem where
+    they have not been adequately explored. Therefore, the goal is not simply to implement an existing method, but
+    to make a meaningful contribution beyond what has already been done, supported by appropriate experiments
+    and evaluation. Roughly, a research project consists of the following milestones (phases):
+
+    1. Project Definition & Team Formation (Proposal)
+    2. Background & Related Work (Literature Review)
+    3. Solution Design & Implementation (Proposed Solution or Method)
+    4. Evaluation (Experimentation)
+    5. Project Presentation: 3-Minute Talk (3MT)
+    6. Project Management & Documentation (Graduate Student Only, Umbrella Activity)
+
+    A project manual has been prepared to guide students through each milestone. Each milestone breaks the project
+    into a series of smaller steps and deliverables. The current manual covers Milestone 4: Evaluation, also known
+    as Experiments or Experimentation.
+
+                                                        4.1. Evaluation Strategy
+
+    The evaluation strategy is the experimental roadmap designed to assess whether a proposed method works, how
+    well it works, and whether it offers advantages over existing approaches. In this course, the primary focus of
+
+    1 AI is used to complete certain elements of the task, with students providing discussion or commentary on the AI-generated content.
+
+    This level requires critical engagement with AI-generated content and evaluating its output (e.g. critique or evaluation of AI-generated
+    analysis). You will use AI to complete specific tasks in your assessment. Any AI-created content must be cited.
+    2
+      https://www.timeanddate.com/time/zones/aoe
+2
+
+
+
+
+    evaluation is empirical assessment. Rather than mathematically proving that an algorithm is correct or
+    theoretically demonstrating that its time complexity is optimal, experiments are conducted using datasets, data
+    mining (machine learning) models, evaluation metrics, and comparative analyses. Evaluation strategy
+    investigates:
+
+       -    Does the proposed approach achieve satisfactory classification performance?
+       -    Does it outperform conventional classification models?
+       -    How sensitive is its performance to different hyperparameter settings?
+       -    Does it perform consistently across different datasets or experimental configurations?
+
+    These questions translate into experiments that allow assessing the proposed approach against measurable
+    criteria. The central idea is simple: the claims must be supported by experimental evidence. For this course, your
+    evaluation should primarily consist of four components:
+
+       1.   Research Questions (RQs): What exactly do you want to investigate?
+       2.   Datasets: What data will you use to conduct your experiments?
+       3.   Baselines: Which existing methods will you compare against?
+       4.   Results: How will you conduct experiments, measure performance, and interpret the findings?
+
+    The following sections explain each component and how to incorporate it into your project report.
+
+                                            4.2. Research Questions (RQs)
+
+    Research Questions (RQs) are specific questions that define what you want to investigate through your
+    experiments. A research question should be sufficiently specific that you can design an experiment to answer it.
+    Ideally, each RQ should correspond to one or more experimental analyses and lead to measurable findings.
+    Common RQs are:
+
+       1. RQ1 (Inference Performance): How does the proposed approach perform compared with conventional
+          approaches?
+
+    Here, the proposed approach refers to your project's main contribution, which may take several forms, including:
+
+       -    A new model or algorithm: Proposing a new learning or prediction method.
+       -    A new embedding or representation method: Introducing a different way of representing data instances,
+            such as words, documents, users, or graphs, before applying an existing machine learning model.
+       -    Feature engineering or feature augmentation: Introducing new features, combining existing features,
+            or investigating the impact of additional information on predictive performance.
+       -    Method adaptation: Modifying or extending an existing method to improve its performance or
+            suitability for a particular problem.
+       -    A new application domain: Applying existing machine learning methods to a new domain, problem, or
+            dataset, and investigating their effectiveness in that context.
+
+    Therefore, your evaluation should be designed around the actual contribution of your project. For example,
+
+       -    If a new embedding method, you should investigate whether the resulting representations improve
+            downstream task (e.g., classification performance.)
+       -    If a set of additional features, you should compare performance with and without those features.
+       -    If applying existing methods to a new domain, you should investigate how effectively these methods
+            perform in that new domain.
+3
+
+
+
+
+       2. RQ2 (Hyperparameter Study): How do different hyperparameter configurations affect the performance
+          of the proposed approach?
+
+       3. RQ3 (Efficiency (Optional)): How does the computational running time of the proposed approach
+          compare with the competing methods?
+
+    Create a subsection entitled Research Questions in your report. For each RQ:
+
+       -   State the research question explicitly.
+       -   Briefly explain why the question is relevant to your project.
+       -   Identify the experiment(s) that will help answer it.
+
+    For example:
+                      “RQ1: Can non-parametric classifiers outperform parameteric ones in the
+                      task of author’s gender identification for a social post? Answering this
+                      question provides insight about the non-parametric model’s capability to
+                      capture potentially nonlinear patterns in social media writing styles
+                      compared with parametric classifiers when identifying an author's gender.
+                      We address this question by comparing k-Nearest Neighbors (k-NN) as the
+                      non-parametric and Logistic Regression as the parametric baselines.
+
+                      RQ2: Is the efficacy of non-parametric classifiers consistent across social
+                      posts from different platforms? Our objective is to investigate whether the
+                      predictive performance of non-parametric classifiers generalizes across
+                      platforms with potentially different writing styles, user behaviours, and
+                      content characteristics. We perform a comparative analysis using datasets
+                      from two platforms, namely, Facebook and LinkedIn.
+
+                      RQ3: How do different hyperparameter configurations affect the
+                      predictive performance of non-parametric classifiers? Our objective is to
+                      investigate the consistency of non-parametric classifiers across their
+                      hyperparameter settings and identify configurations that yield the best
+                      predictive performance. We conduct experiments using different values of
+                      k in k-NN and evaluate their performance through n-fold cross-
+                      validation.”
+
+    Important: Your RQs should guide the organization of your experiments and results. Avoid introducing
+    experimental results that do not help answer your stated research questions.
+
+                                                 4.3. Benchmark Datasets
+
+    A dataset is a collection of instances used to train, validate, and/or evaluate a data mining (machine learning)
+    model. For example, in “the author gender classification” task, a dataset may contain thousands of “social
+    posts”, each associated with a “gender label” such as “female”, “male”, or “unknown”. The quality and
+    characteristics of a dataset directly influence the reliability of the experimental findings. A model that performs
+    well on one dataset may not necessarily perform equally well on another. Therefore, selecting and describing
+    your datasets is an essential part of the evaluation strategy.
+4
+
+
+
+
+    4.3.1. Dataset Selection. You may use publicly available datasets, established benchmark datasets, or datasets
+    collected and prepared as part of your project. Whenever possible, prefer publicly available datasets that have
+    already been used in related research. Such datasets make it easier to compare your findings with existing work.
+    You should also consider:
+
+          •    Relevance: Does the dataset represent the problem you are investigating?
+          •    Size: Does it contain a sufficient number of instances for meaningful experimentation?
+          •    Representativeness: Does it cover the different types of instances you expect to encounter?
+          •    Label availability: For supervised learning, does it contain the ground-truth labels required for training
+               and evaluation?
+          •    Accessibility: Can other researchers access the dataset and reproduce your experiments?
+
+    There is no requirement to use a state-of-the-art benchmark dataset. However, you must justify why your selected
+    datasets are appropriate for your research problem.
+
+    4.3.1. Dataset Statistics. You should provide a concise statistical description of every dataset used in your
+    experiments. Depending on your problem, useful statistics may include:
+
+          -    Number of instances (dataset size)
+          -    Number of features
+          -    Class labels
+          -    Class distribution: number or percentage of instances per class
+          -    Missing values: number or percentage of incomplete records
+          -    Dataset source: link, license, repository, or collection procedure
+
+    For example3:
+
+                  “We evaluate our proposed method on three well-known large-scale benchmark
+                  datasets in team recommendation literature including dblp [22, 23, 29, 69], imdb [16,
+                  23, 70], and uspt [71, 72]. In dblp, each team is a publication in computer science
+                  consisting of authors asthe experts and the fields ofstudy (fos) as the skills. In imdb,
+                  each instance is a movie. We consider each movie as a team whose members are the
+                  cast and crew, and the movies’ genres are the teams’ skills. The choice of imdb inteam
+                  formation literature is not to be confused with its use cases in review analysis research;
+                  herein, the goal is to form a team of casts and crews for a movie production as opposed
+                  to a movie recommendation [16, 70]. In uspt, each instance is a patent issued by the
+                  United States Patents and Trademarks consisting of inventors (experts) and
+                  subcategories (skills). Table 4 reports statistics on the datasets. From Figure 1, male
+                  experts are dominating teams while female experts have participated sparingly in all
+                  datasets. Also, from Figure 2, all datasets suffer from the long tail problem in the
+                  distributions of teams over experts, that is, many experts (researchers in dblp, cast and
+                  crew in imdb, and inventors in uspt) have participated in very few teams (papers in dblp,
+                  movies in imdb, and inventions in uspt).”
+
+
+
+
+    3
+        https://onlinelibrary.wiley.com/doi/10.1111/coin.70221
+5
+
+
+
+
+    Important: Do not make arbitrary changes to a dataset simply to improve your proposed model's performance.
+    Deliberately manipulating or tailoring a dataset to favour a particular method, so-called “cooking the data,” is
+    considered poor research practice. All preprocessing decisions should be justified, transparently documented,
+    and applied consistently across competing models whenever applicable.
+
+                                                       4.4. Baselining
+
+    A baseline is an existing method used as a reference point to assess the performance of a proposed approach. A
+    baseline helps answer a fundamental question: Is the proposed approach actually better than existing alternatives?
+    Without comparative evaluation, it is difficult to establish the value of the proposed approach. For example, in
+    a classification task, data mining (machine learning) classifiers, like those covered in this course including k-
+    Nearest Neighbors (k-NN) and Logistic Regression (LR), allows investigating how the proposed approach
+    performs against two established and conceptually different classification approaches. You are encouraged to
+    include as much as possible baselines including methods like tree-based classifiers (Decision Tree, Random
+    Forests), Support Vector Machines (SVM), and Naive Bayes.
+
+    Optionally, you may also investigate methods reported in related research papers, particularly strong or recent
+    approaches. However, including state-of-the-art methods is not a requirement for this course. The primary
+    objective is to understand and practice the experimental methodology of comparative evaluation. Create a
+    subsection entitled Baselines and for each baseline:
+
+          -    Identify the model and briefly explain how it works.
+          -    Explain why it is a suitable competitor for your proposed approach.
+          -    Identify its important hyperparameters.
+          -    Explain the implementation or library used (e.g., Scikit-learn).
+          -    Provide references when the model or implementation is taken from existing work.
+
+    4.4.1. Fair Comparison. A meaningful comparison requires that all methods are evaluated under comparable
+    experimental conditions: that is, same datasets, preprocessing, training-validation-test partitions, and evaluation
+    metrics. Avoid giving one method access to information unavailable to the other methods. Tune each model
+    using only the training and validation data, not the final test set. Remember that different models may require
+    different preprocessing. For example, feature scaling is important for k-NN and often useful for LR. Such
+    differences are acceptable as long as the preprocessing is appropriate for each model and does not introduce an
+    unfair advantage. Here is an example4:
+
+
+
+
+    4
+        https://arxiv.org/pdf/2609.01631
+6
+
+
+
+
+                   “We compared the end-to-end approach (e2e-*) with the following transfer-based
+                   (t-*) baselines:
+
+               -   t-bnn.m2v [36]: It is the pioneer to transfer embeddings of skills by metapath2vec
+                   [10] for a variational Bayesian neural classifier.
+               -   t-bnn.lant [26]: It employs deep graph infomax [45] for more effective embeddings
+                   of skills in fewer training epochs.
+
+                   To ensure a comprehensive comparison between the end-toend and transfer-based
+                   approaches, we also included strong graph neural networks for a heterogeneous
+                   graph:
+
+               -   graphsage (gs) [18]: It aggregates neighbours’ vectors by a fixed function, herein,
+                   mean, followed by concatenation with the node’s current vector.
+               -   gin [51]: It learns node vectors via learnable aggregation and combination
+                   functions, which, theoretically, show the best node embeddings by capturing graph
+                   structure based on the Weisfeiler-Lehman graph isomorphism test [11].
+               -   gat [44]: It aggregates neighbors with learnable multi-head attention scores based
+                   on the importance of neighbors when aggregating and combining vectors during
+                   message passing.
+               -   han [49]: It is a hierarchical gat that captures the importance of different node
+                   types and their predefined meta-paths to neighbours.”
+
+                                          4.5. Evaluation Strategy and Metrics
+
+    This is the most important part of your evaluation. Here, you demonstrate how you conducted your experiments.
+    Your results should not simply be a collection of accuracy values. They should provide experimental evidence
+    that answers your Research Questions. Explain the experimental procedure in the following steps:
+
+    4.5.1. Dataset Splits: Before conducting experiments, divide your dataset into two independent and randomly
+    selected portions:
+
+       -   Development Set: Used for model training, cross-validation, and hyperparameter selection.
+       -   Final Test Set: Used only once the model configurations have been finalized, to evaluate their
+           generalization performance on unseen data.
+
+    A typical division is: 80% development set and 20% final test set. You may use another reasonable ratio
+    depending on the dataset size, but you must justify your choice. Use stratified splitting whenever appropriate to
+    preserve the class distribution across the partitions.
+
+    Important: Never use the final test set to select hyperparameters, choose models, or make other experimental
+    decisions. Doing so introduces data leakage and makes the final performance estimates unreliable.
+
+    4.5.2. Metric: Evaluation metrics quantify the performance of a machine learning model. The appropriate
+    metrics depend on the task. For classification task, metrics include the following in the order of importance:
+
+       •   Confusion Matrix: A breakdown of correct and incorrect predictions across classes.                           Commented [A1]: Highly recommended but takes a
+       •   AUC: A measure of the model's ability to discriminate between classes across classification thresholds.      large space.
+       •   F1-Score: The harmonic mean of precision and recall.                                                         Commented [A2]: The best!
+       •   Precision: The proportion of predicted positive instances that are actually positive.
+7
+
+
+
+
+          •   Recall: The proportion of actual positive instances that are correctly identified.
+          •   Accuracy: The proportion of correctly classified instances.                                              Commented [A3]: Not recommended.
+
+    You do not necessarily need to report every metric. Select metrics that are relevant to your research questions
+    and explain why they are appropriate. For imbalanced classification datasets, accuracy alone is misleading. In
+    such cases, precision, recall, F1-score, and the confusion matrix can provide a more informative assessment. For
+    multiclass classification, clearly state whether you report macro, micro, or weighted averages when using
+    precision, recall, and F1-score.
+
+    4.5.3. Conduct n-Fold Cross-Validation: Once you have separated the final test set, use n-fold cross-
+    validation on the development set to investigate model configurations. In n-fold cross-validation, the
+    development set is divided into n approximately equal-sized folds. For example, in 5-fold cross-validation:
+
+          -   Divide the development set into five folds.
+          -   Train the model on four folds and validate it on the remaining fold.
+          -   Repeat the experiment five times, using a different fold for validation each time.
+          -   Calculate the average performance across the five experiments.
+          -   Each instance is therefore used for validation once and for training four times.
+          -   The average performance provides a more reliable estimate than relying on a single arbitrary
+              training/validation split.
+
+    You must use the same cross-validation partitioning across all models. Sample python scripts to implement n-
+    fold cross-valiation have been attached to this manual, als can be find here5,6.
+
+    4.5.4. Conduct Hyperparameter Studies: A hyperparameter is a configuration value that controls the
+    behavior of a machine learning model but is not directly learned from the training data. For example, in k-NN,
+    the number of neighbors (k), in LR, training hyperparameters like learning rate, number of epoch, batch size,
+    inference threshold, and in a Decision Tree, the maximum tree depth are hyperparameters. Different
+    hyperparameter configurations may lead to substantially different results. Therefore, you should investigate how
+    the performance of methods changes under different configurations. You should choose reasonable ranges based
+    on the model, dataset, and problem. For every configuration, evaluate the model using the same n-fold cross-
+    validation procedure. You then report the average performance across the folds.
+
+    The best hyperparameter configuration is the configuration that achieves the best performance according to the
+    selected metric. For example, if your primary metric is F1, select the configuration with the highest average
+    cross-validation F1.
+
+    Important: You do not need to investigate every possible combination of hyperparameters. A reasonable and
+    well-justified search is sufficient for this course. For example, consider the following experiments:
+
+                   Model                       Hyperparameters                      Values
+                   k-NN                        Number of neighbors (k)              [1: 2: 10]
+                   Logistic Regression         Learning Rate                        0.01, 0.1, 1
+                                               Batch Size                           100
+                                               Epoch                                [10: 10: 100]
+                                               Inference Threshold                  [0.1: 0.1 :1.0]
+
+    5
+        https://colab.research.google.com/drive/1aXZLJZw95Jyj4PeO1LIPLyRX0Xs5407r?usp=sharing
+    6
+        https://colab.research.google.com/drive/13ApoNThwNZcaWz4vtFmAgi-P2vyztg1X?usp=sharing
+8
+
+
+
+
+    Then, plot the metric values per each hyperparameter based on average performance across the n-fold cross-
+    valieation like:
+
+
+
+
+                “We used the entire dataset to create the expert collaboration graph. For the test set,
+                we selected 15% of the randomly shuffled teams and removed their team-expert links
+                to mask the expert members as unseen during training. We then performed 3-fold
+                cross-validation on the remaining 85% teams by further masking team-expert links
+                for teams within each validation fold, resulting in one trained model per fold. For
+                reproducibility and fair comparison, an identical benchmark with a fixed random
+                seed is used across all methods. Given a team from the test set, a trained model infers
+                the membership probability of all experts by team-expert link predictions. We
+                selected the top-𝑘 ∈ {5, 10} experts as the recommended team and compared them
+                against the ground-truth expert set e and reported the average performance of
+                models on all folds in terms of precision (pr), recall (rec), normalized discounted
+                cumulative gain (ndcg), and mean average precision (map). All graph neural
+                networks included convolutional layers of size 64 and relu activation, after a search
+                over different sizes of {16, 32, 64, 128, 256} across dblp and imdb datasets. For
+                message passing, all neighbors were considered with a negative sampling at a ratio
+                of 5:1. We employed 1-hop sampling with 20 nodes, 2-hop sampling with [20,10],
+                i.e., 20 and 10 nodes in the first and second hops, and 3-hop sampling with [20,10,5]
+                and [30,20,10]. From Figure 3, we observed generally favorable results with 2-hop
+                sampling and [20,10], though not uniformly across all models.”
+9
+
+
+
+
+                                            4.6. Results, Attribution, and Discussion
+
+    Present your findings using tables, charts, and other appropriate visualizations. Your results section should be
+    organized around your Research Questions.
+
+    For RQ1 (Comparative Performance), present a table comparing models’ performance on the final test set using
+    their best hyperparameters. Explain
+
+          -    Which method achieves the best performance?
+          -    How much improvement does your proposed method achieve?
+          -    Are there particular metrics where another method performs better?
+          -    [Attribution: Why] What might explain the observed differences?
+
+
+    For RQ2 (Hyperparameter Sensitivity), present a chart or table showing how different hyperparameter
+    configurations affect your proposed method. Explain:
+
+          -    Which configuration performs best?
+          -    How sensitive is the model to the selected parameter?
+          -    Does increasing or decreasing the parameter improve performance?
+          -    Is the model relatively stable across different configurations?
+          -    [Attribution: Why] What might explain the observed differences?
+
+    Important: Do not simply present tables and expect readers to interpret them. Every important result should be
+    accompanied by an explanation of what it means and how it answers the corresponding research question. Here
+    is an example7:
+                  “In response to RQ1, i.e., whether seq-to-seq models yield better
+                  performance vs. feedforward models, the results from Table 3 demonstrate
+                  that all seq-to-seq models outperform the feedforward ones across metrics
+                  and datasets. This can be attributed to conditioning of expert
+                  recommendation on the previously recommended experts in the output
+                  sequence, allowing for more robust prediction compared to the inherent
+                  sparse activations in the output layer of feedforward models. Notably, seq-
+                  to-seq models’ relative improvements have been as high as 82x in some
+                  datasets, suggesting the right track for the most suitable neural
+                  architecture for team recommendation. The only exception is rrn, which
+                  performs on par or even poorer than the feedforward baselines and will
+                  be discussed more in RQ2.”
+
+
+
+
+    7
+        https://dl.acm.org/doi/10.1145/3726302.3730259
+10
+
+
+
+
+                                                3.6.Submission Guidelines
+     2.2.1. Deliverables
+         - Submission must be written in English, in the current ACM two-column conference format in LaTeX.
+            Overleaf8 templates are available from the ACM Website9. Use the sigconf proceedings template.
+         - The submission must be exactly 2 pages in length, no more and no less, including author list, figures,
+            tables, and references, and must be authored by all team members, with the graduate student listed last
+            in the author list. We understand that fitting all the required content into exactly two pages can be
+            challenging. However, this is intentional: an important part of communication is learning how to retouch,
+            refine, condense, and prioritize information without losing its essential meaning. We recommend initially
+            writing a longer version (e.g., 5-10 pages) and then gradually reducing and retouching it until you can
+            effectively communicate the key ideas within the required two-page limit.
+         - The submission must be a single zip file named: 4_Evaluation_Firstname1_Firstname2_[...].zip, e.g.,
+            4_Evaluation_Reia_Ali_Luiz_Hossein.zip, containing:
+                o The LaTeX source files and any required supplementary files;
+                o The compiled two-page PDF file.
+            A sample is attached to this manual and is also available here10 (4_Evaluation.tex).
+
+     2.2.2. Team and Individual Contributions
+         - Each team must maintain a Git-based repository (e.g., GitLab, GitHub, …)11 for the project and linked
+            inside the report in the title’s footnote and the abstract. The repository must be associated with the
+            individual accounts of all team members. The repository will be used to document the development of
+            the project and to make individual contributions traceable. The repository should be used throughout the
+            project rather than only immediately before a submission deadline. The lab instructor and/or marker may
+            consider the repository’s commit history, pull requests, issues, documentation, and other project records
+            when assess individual contributions. The number of commits alone will not be used as a measure of
+            contribution. The quality, significance, and nature of each member's contributions will also be
+            considered.
+         - The graduate student serves as the project lead, responsible for coordinating the process, maintaining the
+            overall project direction, and ensuring that the project develops toward a meaningful contribution.
+            However, the project lead is also expected to be an active contributor, participating in activities such as
+            problem formulation, literature review, methodology development, implementation, experimentation,
+            analysis, and writing.
+         - Undergraduate members contribute to the project activities under the guidance of the project lead. All
+            team members are expected to make substantive contributions, and no member should be limited solely
+            to coordination or project management.
+         - As part of Milestone 6. Project Management & Documentation (Graduate Student Only), the
+            graduate student (project lead) is expected to document each member’s contributions throughout the
+            project, with a brief contribution statement provided at each major project milestone. These statements
+            will be compiled into the final project management report.
+
+
+     8
+       https://www.overleaf.com/gallery/tagged/acm-official
+     9
+       https://www.acm.org/publications/proceedings-template
+     10
+        https://www.overleaf.com/read/bsrxtwqgggsb
+     11
+        Web-based applications and cloud services may collect, use and/or disclose your personal information and store or access that
+     information outside of Canada. Personal information includes, but not limited to, identifiable individual’s information such as your
+     name or your email address. At UVic, GitLab at gitlab.uvic.ca is highly recommended for coursework, research and projects. For more
+     information, see https://www.uvic.ca/systems/services/pages/gitlab.php. At your team’s discretion, you may use GitHub to store
+     information about your project, but we do not require nor recommend storing any personal identifying information. Also, we do not
+     require public repo, but it should be accessible to instructors and markers for evaluation purposes.
+11
+
+
+
+
+     2.2.3.   Marking Scheme
+         -    05% Author list, style, format, repo, file naming convention, …
+         -    05% Abstract + Introduction
+         -    05% (At least) Two Research Questions: RQ1, RQ2
+         -    05% Datasets + statistics + justification
+         -    05% (At least) Two baselines + justification
+         -    05% Evaluation strategy and metrics
+         -    50% Result presentation, attribution, and discussion
+         -    20% Reproducible/Repeatable results
+
