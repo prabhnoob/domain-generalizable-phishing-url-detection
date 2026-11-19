@@ -47,3 +47,13 @@ The 1% value is a team design target, not a claim that every deployment requires
 - Cross-source test rows sharing a registered domain with training are removed.
 - Recorded result JSON files are never edited by hand or overwritten by a changed method.
 - New method variants write new result files with explicit configuration fields.
+
+## Milestone 4 decisions
+
+- Add kNN and random forest on the 16 lexical features as the two baselines required by the Milestone 4 manual. This replaces the C5 deferral of random forest; XGBoost and the character CNN stay deferred.
+- Tune every model with 5-fold cross-validation on the development set only (stratified for random, grouped by host or registrable domain otherwise), with the same folds for every model and value. Pick each value by mean CV ROC-AUC.
+- Choose the 1% false-positive threshold from out-of-fold CV predictions (C6, C8). Score each final test set once.
+- Run the C1 canonicalization ablation on the cross-source test, as planned in Milestone 3. Site names are taken from the original URLs; only the model sees the cleaned URLs.
+- C2 done: URL-format audit and a one-line "bare homepage" rule (exploratory, added after the first Kaggle results).
+- The team has no graduate student; authors are listed as Prabhnoor Singh, Divraj Singh, Dilraj Gulati.
+- Results are in `evaluation/m4/`; the report is `evaluation/4_Evaluation.pdf`.
