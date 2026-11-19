@@ -23,12 +23,12 @@ SETUPS = [
 ]
 
 
-def kaggle_auc(results, model):
+def kaggle_auc(results: pd.DataFrame, model: str) -> float:
     row = results[(results["setup"] == "cross_source") & (results["model"] == model)]
     return float(row["roc_auc"].iloc[0])
 
 
-def plot_grid(summary, results, output):
+def plot_grid(summary: pd.DataFrame, results: pd.DataFrame, output: Path) -> None:
     plt.rcParams.update({"font.size": 7, "axes.spines.top": False,
                          "axes.spines.right": False})
     figure, axes = plt.subplots(1, 4, figsize=(7.0, 1.4), sharey=True)
@@ -50,7 +50,7 @@ def plot_grid(summary, results, output):
     plt.close(figure)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Plot Milestone 4 CV results")
     parser.add_argument("--results", default="evaluation/m4")
     args = parser.parse_args()

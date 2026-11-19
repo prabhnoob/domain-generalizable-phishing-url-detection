@@ -12,7 +12,7 @@ from phishing_url_detection.reproducibility import set_global_seed
 SETUPS = ["random", "host", "domain", "cross_source", "cross_source_canonical"]
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Milestone 4 evaluation")
     parser.add_argument("--data", default="data/raw/PhiUSIIL_Phishing_URL_Dataset.csv")
     parser.add_argument("--phiusiil-labels", action="store_true")
@@ -26,13 +26,13 @@ def parse_args():
     return parser.parse_args()
 
 
-def load_external(args):
+def load_external(args: argparse.Namespace) -> pd.DataFrame:
     if args.external_format == "kaggle":
         return load_kaggle_malicious_urls(args.external)
     return load_url_csv(args.external)
 
 
-def main():
+def main() -> None:
     args = parse_args()
     set_global_seed(args.seed)
     frame = load_url_csv(args.data, phiusiil_labels=args.phiusiil_labels)

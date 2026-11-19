@@ -37,7 +37,7 @@ GROUP_COLUMN = {
 }
 
 
-def new_model(name, value, seed):
+def new_model(name: str, value, seed: int):
     if name == "knn":
         return make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=value))
     if name == "random_forest":
@@ -53,14 +53,14 @@ def new_model(name, value, seed):
     return model
 
 
-def char_vectorizer():
+def char_vectorizer() -> TfidfVectorizer:
     return TfidfVectorizer(
         analyzer="char", lowercase=True, ngram_range=(3, 5), min_df=1,
         max_features=50_000, sublinear_tf=True,
     )
 
 
-def make_folds(dev, setup, seed, n_folds=5):
+def make_folds(dev: pd.DataFrame, setup: str, seed: int, n_folds: int = 5) -> list:
     group_column = GROUP_COLUMN[setup]
     labels = dev["label"].to_numpy()
     if group_column is None:
@@ -70,7 +70,7 @@ def make_folds(dev, setup, seed, n_folds=5):
     return list(folds.split(dev, labels, groups=dev[group_column]))
 
 
-def feature_sets(urls, lexical, train_idx, test_idx):
+def feature_sets(urls, lexical, train_idx, test_idx) -> dict:
     vectorizer = char_vectorizer()
     char_train = vectorizer.fit_transform(urls[train_idx])
     char_test = vectorizer.transform(urls[test_idx])
@@ -80,7 +80,7 @@ def feature_sets(urls, lexical, train_idx, test_idx):
     }
 
 
-def score_fold(y_true, scores):
+def score_fold(y_true, scores) -> dict[str, float]:
     predictions = (scores >= 0.5).astype(int)
     return {
         "roc_auc": roc_auc_score(y_true, scores),
@@ -91,7 +91,7 @@ def score_fold(y_true, scores):
     }
 
 
-def cross_validate(dev, setup, seed):
+def cross_validate(dev: pd.DataFrame, setup: str, seed: int):
     urls = dev["url"].to_numpy()
     labels = dev["label"].to_numpy()
     lexical = LexicalURLFeatures().transform(urls)
@@ -117,7 +117,7 @@ def cross_validate(dev, setup, seed):
     return pd.DataFrame(fold_rows), out_of_fold
 
 
-def summarize_folds(fold_table):
+def summarize_folds(fold_table: pd.DataFrame) -> pd.DataFrame:
     columns = ["roc_auc", "pr_auc", "f1", "precision", "recall"]
     keys = ["setup", "model", "parameter", "value"]
     summary = fold_table.groupby(keys, sort=False)[columns].agg(["mean", "std"])
@@ -125,7 +125,7 @@ def summarize_folds(fold_table):
     return summary.reset_index()
 
 
-def best_values(summary):
+def best_values(summary: pd.DataFrame) -> dict[str, str]:
     best = {}
     for name in GRIDS:
         rows = summary[summary["model"] == name]
@@ -133,14 +133,15 @@ def best_values(summary):
     return best
 
 
-def parse_value(name, text):
+def parse_value(name: str, text: str):
     for value in GRIDS[name][1]:
         if str(value) == text:
             return value
     raise ValueError(f"Unknown value {text} for {name}")
 
 
-def final_test(dev, test, best, out_of_fold, seed, target_fpr):
+def final_test(dev: pd.DataFrame, test: pd.DataFrame, best: dict, out_of_fold: dict,
+               seed: int, target_fpr: float) -> list[dict]:
     dev_urls = dev["url"].to_numpy()
     test_urls = test["url"].to_numpy()
     dev_labels = dev["label"].to_numpy()
@@ -173,7 +174,7 @@ def final_test(dev, test, best, out_of_fold, seed, target_fpr):
     return results
 
 
-def make_dev_test(frame, setup, external, seed):
+def make_dev_test(frame: pd.DataFrame, setup: str, external, seed: int):
     if setup == "cross_source":
         split, report = cross_source_split(frame, external)
         return split.train, split.test, report
@@ -181,8 +182,8 @@ def make_dev_test(frame, setup, external, seed):
     return split.train, split.test, {}
 
 
-def run_setup(frame, setup, *, external=None, canonicalize=False,
-              seed=474, target_fpr=0.01):
+def run_setup(frame: pd.DataFrame, setup: str, *, external: pd.DataFrame | None = None,
+              canonicalize: bool = False, seed: int = 474, target_fpr: float = 0.01):
     dev, test, report = make_dev_test(frame, setup, external, seed)
     dev = dev.reset_index(drop=True)
     test = test.reset_index(drop=True)
@@ -203,7 +204,8 @@ def run_setup(frame, setup, *, external=None, canonicalize=False,
     return fold_table, summary, results
 
 
-def save_tables(folder, fold_table, summary, results):
+def save_tables(folder: str | Path, fold_table: pd.DataFrame, summary: pd.DataFrame,
+                results: list[dict]) -> None:
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     fold_table.to_csv(folder / "cv_folds.csv", index=False, float_format="%.6f")

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from phishing_url_detection.data import load_kaggle_malicious_urls, load_url_csv
 from phishing_url_detection.domains import canonicalize_url
@@ -12,17 +13,17 @@ from phishing_url_detection.metrics import classification_metrics
 from phishing_url_detection.splits import make_split
 
 
-def bare_homepage(url):
+def bare_homepage(url: str) -> bool:
     text = str(url).strip().lower()
     return text.startswith("https://www.") and "/" not in canonicalize_url(text)
 
 
-def rule_scores(test):
+def rule_scores(test: pd.DataFrame) -> dict:
     predictions = np.array([0 if bare_homepage(u) else 1 for u in test["url"]])
     return classification_metrics(test["label"], predictions, predictions)
 
 
-def main():
+def main() -> None:
     phiusiil = load_url_csv("data/raw/PhiUSIIL_Phishing_URL_Dataset.csv",
                             phiusiil_labels=True)
     kaggle = load_kaggle_malicious_urls(
@@ -37,7 +38,8 @@ def main():
     results = {name: rule_scores(test) for name, test in tests.items()}
     for name, test in tests.items():
         safe = test[test["label"] == 0]["url"]
-        results[name]["safe_bare_homepage_share"] = float(safe.map(bare_homepage).mean())
+        share = float(safe.map(bare_homepage).mean())
+        results[name]["safe_bare_homepage_share"] = share
     output = Path("evaluation/m4/format_rule.json")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
